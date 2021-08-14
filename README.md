@@ -1,9 +1,22 @@
 # JInvoice
 ## Description and Requirements
-TODO
+Simple invoice generator built with Java Swing.
 
 ## Contents
-TODO
+```
+root
+|
++--docs
+|     |
+|     +--design // requirements and design of the application
+|     |
+|     +--user // documentation intended for users
+|
++--src // Maven Eclipse project
+|
++--README.md
++--.gitignore
+```
 
 ## Installation and Setup
 TODO
@@ -18,4 +31,4 @@ TODO
 TODO
 
 ## License
-TODO
+MIT

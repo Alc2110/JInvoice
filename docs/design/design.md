@@ -2,6 +2,8 @@
 ## Introduction
 This is a simple Java Swing invoice generator application. It allows the user to enter the details of the invoice in a form, and generate a Microsoft Excel spreadsheet or PDF document with the invoice information. The user interface has a minimalist and functional design. The development of this application is primarily for the purposes of programming practice, but it may be suitable for real-world use as well.
 
+This document may be updated as development progresses and aspects of the design change.
+
 ## Requirements
 ### R-1
 The application must be cross-platform on Windows, Mac and Linux.
@@ -41,9 +43,12 @@ TODO
 ## Architectural and Data Design
 The application is developed as a Eclipse Java Maven project. The structure of the source code is designed to allow for separation of concerns, and other best practices, as much as possible. This includes provisions for unit-testing of the user interface logic.
 
-The application uses the following open-source libraries:
-- Apache POI - for reading and writing Excel documents
-- Apache PDFBox - for writing PDF documents
+![uml](uml.PNG)
+
+The application uses the following open-source libraries and components:
+- Apache POI by Apache Software Foundation - for reading and writing Excel documents
+- Apache PDFBox by Apache Software Foundation - for writing PDF documents
+- JDatePicker by Juan Heyns - widget for specifying dates
 
 ## Release Schedule
 ### v0.9.0

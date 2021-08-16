@@ -49,6 +49,7 @@ The application uses the following open-source libraries and components:
 - Apache POI by Apache Software Foundation - for reading and writing Excel documents
 - Apache PDFBox by Apache Software Foundation - for writing PDF documents
 - JDatePicker by Juan Heyns - widget for specifying dates
+https://cloudstack.ninja/gabbo/how-to-use-jdatepicker/
 
 ## Release Schedule
 ### v0.9.0

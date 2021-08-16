@@ -67,7 +67,7 @@ public class Main
 		public static final String[] ATTRIBUTIONS = new String[]
 				{
 						"Apache POI by Apache Software Foundation",
-						"Apache PDFBox by Apache Software Foundation",
+						//"Apache PDFBox by Apache Software Foundation",
 						"JDatePicker by Juan Heyns"
 				};
 	}

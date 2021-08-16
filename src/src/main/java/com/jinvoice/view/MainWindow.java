@@ -1,6 +1,8 @@
 package com.jinvoice.view;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 
 /*
@@ -75,7 +77,7 @@ public class MainWindow extends JFrame
 		c3.gridy = 1;
 		c3.gridwidth = 3;
 		c3.gridheight = 1;
-		c2.weightx = 1; 
+		c2.weightx = 0; 
 		c2.weighty = 1; 
 		c2.insets = new Insets(2,2,2,2);
 		this._mainPanel.add(this._itemsTablePanel, c3);
@@ -115,25 +117,144 @@ public class MainWindow extends JFrame
 	
 	class DetailsPanel extends JPanel
 	{
+		private final JLabel _titleLbl = new JLabel("Title");
+		private final JTextField _titleField = new JTextField();
+		
+		private final JLabel _numberLbl = new JLabel("Number");
+		private final JTextField _numberField = new JTextField();
+		
+		private final JLabel _dateLbl = new JLabel("Date");
+		private final JTextField _dateField = new JTextField();
+		
+		private final JLabel _paymentTermsLbl = new JLabel("Payment Terms");
+		private final JTextField _paymentTermsField = new JTextField();
+		
+		private final JLabel _dueDateLbl = new JLabel("Due Date");
+		private final JTextField _dueDateField = new JTextField();
+		
 		public DetailsPanel()
 		{
-			this.setBackground(Color.GREEN);
+			this.setLayout(new GridBagLayout());
+			
+			addComponent(this._titleLbl, 0, 0);
+			addComponent(this._titleField, 1, 0);
+			
+			addComponent(this._numberLbl, 0, 1);
+			addComponent(this._numberField, 1, 1);
+			
+			addComponent(this._dateLbl, 0, 2);
+			addComponent(this._dateField, 1, 2);
+			
+			addComponent(this._paymentTermsLbl, 0, 3);
+			addComponent(this._paymentTermsField, 1, 3);
+			
+			addComponent(this._dueDateLbl, 0, 4);
+			addComponent(this._dueDateField, 1, 4);
+		}
+		
+		private void addComponent(Component component,
+				int gridx, int gridy)
+		{
+			GridBagConstraints c = new GridBagConstraints();
+			c.weightx = 1;
+			c.weighty = 1;
+			c.fill = GridBagConstraints.BOTH;
+			c.insets = new Insets(2,2,2,2);
+			c.gridx = gridx;
+			c.gridy = gridy;
+			c.anchor = GridBagConstraints.CENTER;
+			this.add(component, c);
 		}
 	}
 	
 	class ItemsTablePanel extends JPanel
 	{
+		private final JTable _table = new JTable();
+		private final JScrollPane _scrollPane;
+		
+		private final String[] TABLE_HEADERS = new String[]
+				{
+						"Description", 
+						"Price",
+						"Quantity",
+						"Amount"
+				};
+		
 		public ItemsTablePanel()
 		{
-			this.setBackground(Color.BLUE);
+			this.setLayout(new GridLayout());
+			DefaultTableModel tableModel = new DefaultTableModel()
+			{
+				@Override
+				public boolean isCellEditable(int i, int i1)
+				{
+					return false;
+				}
+			};
+			tableModel.addColumn(TABLE_HEADERS[0]);
+			tableModel.addColumn(TABLE_HEADERS[1]);
+			tableModel.addColumn(TABLE_HEADERS[2]);
+			tableModel.addColumn(TABLE_HEADERS[3]);
+			this._table.setModel(tableModel);
+			this._table.setFillsViewportHeight(true);
+			this._scrollPane = new JScrollPane(this._table);
+			this._scrollPane.setViewportView(this._table);
+			this._scrollPane.setBorder(BorderFactory.createTitledBorder("Items"));
+			this.add(this._scrollPane);
 		}
 	}
 	
 	class TotalsPanel extends JPanel
 	{
+		private final JLabel _subtotalLbl = new JLabel("Subtotal");
+		private final JTextField _subtotalField = new JTextField();
+		
+		private final JLabel _taxLbl = new JLabel("Tax (%)");
+		private final JTextField _taxField = new JTextField();
+		
+		private final JLabel _discountLbl = new JLabel("Discount (%)");
+		private final JTextField _discountField = new JTextField();
+		
+		private final JLabel _shippingLbl = new JLabel("Shipping");
+		private final JTextField _shippingField = new JTextField();
+		
+		private final JLabel _totalLbl = new JLabel("Total");
+		private final JTextField _totalField = new JTextField();
+		
 		public TotalsPanel()
 		{
-			this.setBackground(Color.YELLOW);
+			this.setLayout(new GridBagLayout());
+			
+			addComponent(this._subtotalLbl, 0, 0);
+			this._subtotalField.setEditable(false);
+			addComponent(this._subtotalField, 1, 0);
+			
+			addComponent(this._taxLbl, 0, 1);
+			addComponent(this._taxField, 1, 1);
+			
+			addComponent(this._discountLbl, 0, 2);
+			addComponent(this._discountField, 1, 2);
+			
+			addComponent(this._shippingLbl, 0, 3);
+			addComponent(this._shippingField, 1, 3);
+			
+			addComponent(this._totalLbl, 0, 4);
+			this._totalField.setEditable(false);
+			addComponent(this._totalField, 1, 4);
+		}
+		
+		private void addComponent(Component component,
+				int gridx, int gridy)
+		{
+			GridBagConstraints c = new GridBagConstraints();
+			c.weightx = 1;
+			c.weighty = 1;
+			c.fill = GridBagConstraints.BOTH;
+			c.insets = new Insets(2,2,2,2);
+			c.gridx = gridx;
+			c.gridy = gridy;
+			c.anchor = GridBagConstraints.CENTER;
+			this.add(component, c);
 		}
 	}
 	

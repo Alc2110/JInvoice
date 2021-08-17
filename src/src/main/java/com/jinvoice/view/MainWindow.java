@@ -17,12 +17,12 @@ public class MainWindow extends JFrame
 	private final JMenuItem _fileExitMenuItem = new JMenuItem("Exit");
 	private final JMenu _helpMenu = new JMenu("Help");
 	private final JMenuItem _helpAboutMenuItem = new JMenuItem("About");
+
+	private final NorthPanel _northPanel = new NorthPanel();
 	
-	private final ToPanel _toPanel = new ToPanel();
-	private final DetailsPanel _detailsPanel = new DetailsPanel();
 	private final ItemsTablePanel _itemsTablePanel = new ItemsTablePanel();
-	private final TotalsPanel _totalsPanel = new TotalsPanel();
-	private final NotesAndButtonsPanel _notesAndButtonsPanel = new NotesAndButtonsPanel();
+
+	private final SouthPanel _southPanel = new SouthPanel(this._itemsTablePanel.getButtonSize());
 	
 	/*
 	 * Constructor.
@@ -44,74 +44,130 @@ public class MainWindow extends JFrame
 		{
 			JOptionPane.showMessageDialog(this, "Simple invoice generator. Creates invoices in Excel format. \n\n" + this.buildAttributionText(attributions), "About " + title, JOptionPane.INFORMATION_MESSAGE);
 		}));
-		
-		this._mainPanel.setLayout(new GridBagLayout());
+
+		this._mainPanel.setLayout(new BorderLayout());
 		
 		// add components
-		
-		GridBagConstraints c1 = new GridBagConstraints();
-		c1.fill = GridBagConstraints.BOTH;
-		c1.gridx = 0;
-		c1.gridy = 0;
-		c1.gridwidth = 2;
-		c1.gridheight = 1;
-		c1.weightx = 1; 
-		c1.weighty = 1; 
-		c1.insets = new Insets(2,2,2,2);
-		this._mainPanel.add(this._toPanel, c1);
-		
-		GridBagConstraints c2 = new GridBagConstraints();
-		c2.fill = GridBagConstraints.BOTH;
-		c2.gridx = 2;
-		c2.gridy = 0;
-		c1.gridwidth = 1;
-		c1.gridheight = 1;
-		c2.weightx = 0.5; 
-		c2.weighty = 0; 
-		c2.insets = new Insets(2,2,2,2);
-		this._mainPanel.add(this._detailsPanel, c2);
-		
-		GridBagConstraints c3 = new GridBagConstraints();
-		c3.fill = GridBagConstraints.BOTH;
-		c3.gridx = 0;
-		c3.gridy = 1;
-		c3.gridwidth = 3;
-		c3.gridheight = 1;
-		c2.weightx = 0; 
-		c2.weighty = 1; 
-		c2.insets = new Insets(2,2,2,2);
-		this._mainPanel.add(this._itemsTablePanel, c3);
-		
-		GridBagConstraints c4 = new GridBagConstraints();
-		c4.fill = GridBagConstraints.BOTH;
-		c4.gridx = 0;
-		c4.gridy = 2;
-		c4.gridwidth = 2;
-		c4.gridheight = 1;
-		c4.weightx = 0; 
-		c4.weighty = 1; 
-		c4.insets = new Insets(2,2,2,2);
-		this._mainPanel.add(this._notesAndButtonsPanel, c4);
-		
-		GridBagConstraints c5 = new GridBagConstraints();
-		c5.fill = GridBagConstraints.BOTH;
-		c5.gridx = 2;
-		c5.gridy = 2;
-		c5.gridwidth = 1;
-		c5.gridheight = 1;
-		c5.weightx = 0.5; 
-		c5.weighty = 0; 
-		c5.insets = new Insets(2,2,2,2);
-		this._mainPanel.add(this._totalsPanel, c5);
-		
+		this._mainPanel.add(this._northPanel, BorderLayout.NORTH);
+		this._mainPanel.add(this._itemsTablePanel, BorderLayout.CENTER);
+		this._mainPanel.add(this._southPanel, BorderLayout.SOUTH);
+
 		this.add(this._mainPanel);
 	}//ctor
 	
+	class NorthPanel extends JPanel
+	{
+		private final ToPanel _toPanel = new ToPanel();
+		private final DetailsPanel _detailsPanel = new DetailsPanel();
+		
+		public NorthPanel()
+		{
+			this.setLayout(new GridBagLayout());
+			
+			GridBagConstraints c1 = new GridBagConstraints();
+			c1.fill = GridBagConstraints.BOTH;
+			c1.gridx = 0;
+			c1.gridy = 0;
+			c1.gridwidth = 2;
+			c1.gridheight = 1;
+			c1.weightx = 1; 
+			c1.weighty = 1; 
+			c1.insets = new Insets(2,2,2,2);
+			this.add(this._toPanel, c1);
+			
+			GridBagConstraints c2 = new GridBagConstraints();
+			c2.fill = GridBagConstraints.BOTH;
+			c2.gridx = 2;
+			c2.gridy = 0;
+			c2.gridwidth = 2;
+			c2.gridheight = 1;
+			c2.weightx = 0.5; 
+			c2.weighty = 0; 
+			c2.insets = new Insets(2,2,2,2);
+			this.add(this._detailsPanel, c2);
+		}
+	}
+	
+	class SouthPanel extends JPanel
+	{
+		private final TotalsPanel _totalsPanel = new TotalsPanel();
+		private final NotesAndButtonsPanel _notesAndButtonsPanel;
+		
+		public SouthPanel(Dimension btnDim)
+		{
+			this.setLayout(new GridBagLayout());
+			
+			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
+			
+			GridBagConstraints c1 = new GridBagConstraints();
+			c1.fill = GridBagConstraints.BOTH;
+			c1.gridx = 0;
+			c1.gridy = 0;
+			c1.gridwidth = 2;
+			c1.gridheight = 1;
+			c1.weightx = 1; 
+			c1.weighty = 1; 
+			c1.insets = new Insets(2,2,2,2);
+			this.add(this._notesAndButtonsPanel, c1);
+			
+			GridBagConstraints c2 = new GridBagConstraints();
+			c2.fill = GridBagConstraints.BOTH;
+			c2.gridx = 2;
+			c2.gridy = 0;
+			c2.gridwidth = 2;
+			c2.gridheight = 1;
+			c2.weightx = 0.5; 
+			c2.weighty = 0; 
+			c2.insets = new Insets(2,2,2,2);
+			this.add(this._totalsPanel, c2);
+		}
+	}
+	
 	class ToPanel extends JPanel
 	{
+		private JTextField _fromField = new JTextField();
+		private JTextField _billToField = new JTextField();
+		private JTextField _shipToField = new JTextField();
+		
 		public ToPanel()
 		{
-			this.setBackground(Color.RED);
+			this.setLayout(new GridBagLayout());
+			
+			this._fromField.setBorder(BorderFactory.createTitledBorder("From"));
+			GridBagConstraints c1 = new GridBagConstraints();
+			c1.fill = GridBagConstraints.BOTH;
+			c1.gridx = 0;
+			c1.gridy = 0;
+			c1.gridwidth = 2;
+			c1.gridheight = 1;
+			c1.weightx = 1; 
+			c1.weighty = 1; 
+			c1.insets = new Insets(2,2,2,2);
+			this.add(this._fromField, c1);
+			
+			this._billToField.setBorder(BorderFactory.createTitledBorder("Bill To"));
+			GridBagConstraints c2 = new GridBagConstraints();
+			c2.fill = GridBagConstraints.BOTH;
+			c2.gridx = 0;
+			c2.gridy = 1;
+			c2.gridwidth = 1;
+			c2.gridheight = 1;
+			c2.weightx = 1; 
+			c2.weighty = 1; 
+			c2.insets = new Insets(2,2,2,2);
+			this.add(this._billToField, c2);
+			
+			this._shipToField.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
+			GridBagConstraints c3 = new GridBagConstraints();
+			c3.fill = GridBagConstraints.BOTH;
+			c3.gridx = 1;
+			c3.gridy = 1;
+			c3.gridwidth = 1;
+			c3.gridheight = 1;
+			c3.weightx = 1; 
+			c3.weighty = 1; 
+			c3.insets = new Insets(2,2,2,2);
+			this.add(this._shipToField, c3);
 		}
 	}
 	
@@ -156,8 +212,12 @@ public class MainWindow extends JFrame
 				int gridx, int gridy)
 		{
 			GridBagConstraints c = new GridBagConstraints();
+			/*
 			c.weightx = 1;
 			c.weighty = 1;
+			*/
+			c.weightx = 0.5;
+			c.weighty = 0;
 			c.fill = GridBagConstraints.BOTH;
 			c.insets = new Insets(2,2,2,2);
 			c.gridx = gridx;
@@ -180,9 +240,12 @@ public class MainWindow extends JFrame
 						"Amount"
 				};
 		
+		private final ButtonsPanel _btnsPanel = new ButtonsPanel();
+		
 		public ItemsTablePanel()
 		{
-			this.setLayout(new GridLayout());
+			this.setLayout(new BorderLayout());
+			
 			DefaultTableModel tableModel = new DefaultTableModel()
 			{
 				@Override
@@ -200,7 +263,35 @@ public class MainWindow extends JFrame
 			this._scrollPane = new JScrollPane(this._table);
 			this._scrollPane.setViewportView(this._table);
 			this._scrollPane.setBorder(BorderFactory.createTitledBorder("Items"));
-			this.add(this._scrollPane);
+			this.add(this._scrollPane, BorderLayout.CENTER);
+			
+			this.add(this._btnsPanel, BorderLayout.SOUTH);
+		}
+		
+		public Dimension getButtonSize()
+		{
+			return this._btnsPanel.getButtonSize();
+		}
+		
+		class ButtonsPanel extends JPanel
+		{
+			private final JButton _addBtn = new JButton("Add");
+			private final JButton _removeBtn = new JButton("Remove Selected");
+			
+			public ButtonsPanel()
+			{
+				this.setLayout(new FlowLayout());
+				
+				this._addBtn.setPreferredSize(getButtonSize());
+				
+				this.add(this._addBtn);
+				this.add(this._removeBtn);
+			}
+			
+			public Dimension getButtonSize()
+			{
+				return this._removeBtn.getPreferredSize();
+			}
 		}
 	}
 	
@@ -225,8 +316,12 @@ public class MainWindow extends JFrame
 		{
 			this.setLayout(new GridBagLayout());
 			
+			Font totalFont = new Font("SansSerif", Font.BOLD, 20);
+			
 			addComponent(this._subtotalLbl, 0, 0);
+			this._subtotalField.setPreferredSize(new Dimension(100,50));
 			this._subtotalField.setEditable(false);
+			this._subtotalField.setFont(totalFont);
 			addComponent(this._subtotalField, 1, 0);
 			
 			addComponent(this._taxLbl, 0, 1);
@@ -239,6 +334,7 @@ public class MainWindow extends JFrame
 			addComponent(this._shippingField, 1, 3);
 			
 			addComponent(this._totalLbl, 0, 4);
+			this._totalField.setPreferredSize(new Dimension(100,50));
 			this._totalField.setEditable(false);
 			addComponent(this._totalField, 1, 4);
 		}
@@ -260,9 +356,36 @@ public class MainWindow extends JFrame
 	
 	class NotesAndButtonsPanel extends JPanel
 	{
-		public NotesAndButtonsPanel()
+		private final JTextField _notesField = new JTextField();
+		private final ButtonsPanel _buttonsPanel;
+		
+		public NotesAndButtonsPanel(Dimension btnDim)
 		{
-			this.setBackground(Color.ORANGE);
+			this.setLayout(new BorderLayout());
+			
+			this._buttonsPanel = new ButtonsPanel(btnDim);
+			
+			this._notesField.setPreferredSize(new Dimension(100, 100));
+			this._notesField.setBorder(BorderFactory.createTitledBorder("Notes (optional)"));
+			this.add(this._notesField, BorderLayout.CENTER);
+			
+			this.add(this._buttonsPanel, BorderLayout.SOUTH);
+		}
+		
+		class ButtonsPanel extends JPanel
+		{
+			private final JButton _createButton = new JButton("Create");
+			private final JButton _cancelButton = new JButton("Cancel");
+			
+			public ButtonsPanel(Dimension btnDim)
+			{
+				this.setLayout(new FlowLayout());
+				
+				this._createButton.setPreferredSize(btnDim);
+				this.add(this._createButton);
+				this._cancelButton.setPreferredSize(btnDim);
+				this.add(this._cancelButton);
+			}
 		}
 	}
 	

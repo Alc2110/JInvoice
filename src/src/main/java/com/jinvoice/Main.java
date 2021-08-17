@@ -59,7 +59,7 @@ public class Main
 	
 	public static class Configuration
 	{
-		public static final int WINDOW_WIDTH = 500;
+		public static final int WINDOW_WIDTH = 600;
 		public static final int WINDOW_HEIGHT = 500;
 		
 		public static final String APP_NAME = "JInvoice";

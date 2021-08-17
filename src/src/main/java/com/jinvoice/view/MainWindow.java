@@ -63,28 +63,26 @@ public class MainWindow extends JFrame
 		public NorthPanel()
 		{
 			this.setLayout(new GridBagLayout());
-			
-			GridBagConstraints c1 = new GridBagConstraints();
-			c1.fill = GridBagConstraints.BOTH;
-			c1.gridx = 0;
-			c1.gridy = 0;
-			c1.gridwidth = 2;
-			c1.gridheight = 1;
-			c1.weightx = 1; 
-			c1.weighty = 1; 
-			c1.insets = new Insets(2,2,2,2);
-			this.add(this._toPanel, c1);
-			
-			GridBagConstraints c2 = new GridBagConstraints();
-			c2.fill = GridBagConstraints.BOTH;
-			c2.gridx = 2;
-			c2.gridy = 0;
-			c2.gridwidth = 2;
-			c2.gridheight = 1;
-			c2.weightx = 0.5; 
-			c2.weighty = 0; 
-			c2.insets = new Insets(2,2,2,2);
-			this.add(this._detailsPanel, c2);
+
+			addPanel(this._toPanel, 0, 0, 2, 1, 1, 1);
+			addPanel(this._detailsPanel, 2, 0, 2, 1, 0.5, 0);
+		}
+		
+		private void addPanel(JPanel panel,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.weightx = weightx;
+			gbc.weighty = weighty;
+			gbc.insets = new Insets(2,2,2,2);
+			this.add(panel, gbc);
 		}
 	}
 	
@@ -98,28 +96,26 @@ public class MainWindow extends JFrame
 			this.setLayout(new GridBagLayout());
 			
 			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
-			
-			GridBagConstraints c1 = new GridBagConstraints();
-			c1.fill = GridBagConstraints.BOTH;
-			c1.gridx = 0;
-			c1.gridy = 0;
-			c1.gridwidth = 2;
-			c1.gridheight = 1;
-			c1.weightx = 1; 
-			c1.weighty = 1; 
-			c1.insets = new Insets(2,2,2,2);
-			this.add(this._notesAndButtonsPanel, c1);
-			
-			GridBagConstraints c2 = new GridBagConstraints();
-			c2.fill = GridBagConstraints.BOTH;
-			c2.gridx = 2;
-			c2.gridy = 0;
-			c2.gridwidth = 2;
-			c2.gridheight = 1;
-			c2.weightx = 0.5; 
-			c2.weighty = 0; 
-			c2.insets = new Insets(2,2,2,2);
-			this.add(this._totalsPanel, c2);
+
+			addPanel(this._notesAndButtonsPanel, 0, 0, 2, 1, 1, 1);
+			addPanel(this._totalsPanel, 2, 0, 2, 1, 0.5, 0);
+		}
+		
+		private void addPanel(JPanel panel,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.weightx = weightx;
+			gbc.weighty = weighty;
+			gbc.insets = new Insets(2,2,2,2);
+			this.add(panel, gbc);
 		}
 	}
 	
@@ -134,40 +130,30 @@ public class MainWindow extends JFrame
 			this.setLayout(new GridBagLayout());
 			
 			this._fromField.setBorder(BorderFactory.createTitledBorder("From"));
-			GridBagConstraints c1 = new GridBagConstraints();
-			c1.fill = GridBagConstraints.BOTH;
-			c1.gridx = 0;
-			c1.gridy = 0;
-			c1.gridwidth = 2;
-			c1.gridheight = 1;
-			c1.weightx = 1; 
-			c1.weighty = 1; 
-			c1.insets = new Insets(2,2,2,2);
-			this.add(this._fromField, c1);
+			addTextField(this._fromField, 0, 0, 2, 1, 1, 1);
 			
 			this._billToField.setBorder(BorderFactory.createTitledBorder("Bill To"));
-			GridBagConstraints c2 = new GridBagConstraints();
-			c2.fill = GridBagConstraints.BOTH;
-			c2.gridx = 0;
-			c2.gridy = 1;
-			c2.gridwidth = 1;
-			c2.gridheight = 1;
-			c2.weightx = 1; 
-			c2.weighty = 1; 
-			c2.insets = new Insets(2,2,2,2);
-			this.add(this._billToField, c2);
+			addTextField(this._billToField, 0, 1, 1, 1, 1, 1);
 			
 			this._shipToField.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
-			GridBagConstraints c3 = new GridBagConstraints();
-			c3.fill = GridBagConstraints.BOTH;
-			c3.gridx = 1;
-			c3.gridy = 1;
-			c3.gridwidth = 1;
-			c3.gridheight = 1;
-			c3.weightx = 1; 
-			c3.weighty = 1; 
-			c3.insets = new Insets(2,2,2,2);
-			this.add(this._shipToField, c3);
+			addTextField(this._shipToField, 1, 1, 1, 1, 1, 1);
+		}
+		
+		private void addTextField(JTextField textField,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.weightx = weightx;
+			gbc.weighty = weighty;
+			gbc.insets = new Insets(2,2,2,2);
+			this.add(textField, gbc);
 		}
 	}
 	

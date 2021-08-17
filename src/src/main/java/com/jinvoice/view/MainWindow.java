@@ -10,6 +10,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 import java.awt.*;
+import java.util.Date;
 import java.util.Properties;
 import java.text.SimpleDateFormat;
 
@@ -180,7 +181,6 @@ public class MainWindow extends JFrame
 		private final JTextField _paymentTermsField = new JTextField();
 		
 		private final JLabel _dueDateLbl = new JLabel("Due Date");
-		//private final JTextField _dueDateField = new JTextField();
 		private final JDatePickerImpl _dueDatePicker;
 		
 		public DetailsPanel()

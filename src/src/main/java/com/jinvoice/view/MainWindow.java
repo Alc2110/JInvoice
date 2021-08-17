@@ -3,7 +3,15 @@ package com.jinvoice.view;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.DateComponentFormatter;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
 import java.awt.*;
+import java.util.Properties;
+import java.text.SimpleDateFormat;
 
 /*
  * Application main window.
@@ -166,13 +174,14 @@ public class MainWindow extends JFrame
 		private final JTextField _numberField = new JTextField();
 		
 		private final JLabel _dateLbl = new JLabel("Date");
-		private final JTextField _dateField = new JTextField();
+		private final JDatePickerImpl _datePicker;
 		
 		private final JLabel _paymentTermsLbl = new JLabel("Payment Terms");
 		private final JTextField _paymentTermsField = new JTextField();
 		
 		private final JLabel _dueDateLbl = new JLabel("Due Date");
-		private final JTextField _dueDateField = new JTextField();
+		//private final JTextField _dueDateField = new JTextField();
+		private final JDatePickerImpl _dueDatePicker;
 		
 		public DetailsPanel()
 		{
@@ -185,13 +194,23 @@ public class MainWindow extends JFrame
 			addComponent(this._numberField, 1, 1);
 			
 			addComponent(this._dateLbl, 0, 2);
-			addComponent(this._dateField, 1, 2);
+			UtilDateModel dateModel = new UtilDateModel();
+			Properties p = new Properties();
+			p.put("text.today", "Today");
+			p.put("text.month", "Month");
+			p.put("text.year", "Year");
+			JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
+			this._datePicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
+			addComponent(this._datePicker, 1, 2);
 			
 			addComponent(this._paymentTermsLbl, 0, 3);
 			addComponent(this._paymentTermsField, 1, 3);
 			
 			addComponent(this._dueDateLbl, 0, 4);
-			addComponent(this._dueDateField, 1, 4);
+			UtilDateModel dueDateModel = new UtilDateModel();
+			JDatePanelImpl dueDatePanel = new JDatePanelImpl(dueDateModel, p);
+			this._dueDatePicker = new JDatePickerImpl(dueDatePanel, new DateComponentFormatter());
+			addComponent(this._dueDatePicker, 1, 4);
 		}
 		
 		private void addComponent(Component component,

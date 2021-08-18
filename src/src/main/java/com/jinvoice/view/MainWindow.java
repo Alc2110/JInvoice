@@ -130,25 +130,35 @@ public class MainWindow extends JFrame
 	
 	class ToPanel extends JPanel
 	{
-		private JTextField _fromField = new JTextField();
-		private JTextField _billToField = new JTextField();
-		private JTextField _shipToField = new JTextField();
+		private JTextArea _fromField = new JTextArea();
+		private JScrollPane _fromFieldPane = new JScrollPane(this._fromField);
+		
+		private JTextArea _billToField = new JTextArea();
+		private JScrollPane _billToFieldPane = new JScrollPane(this._billToField);
+		
+		private JTextArea _shipToField = new JTextArea();
+		private JScrollPane _shipToFieldPane = new JScrollPane(this._shipToField);
+		
+		private final Font _toFont = new Font("SansSerif", Font.PLAIN, 9);
 		
 		public ToPanel()
 		{
 			this.setLayout(new GridBagLayout());
 			
-			this._fromField.setBorder(BorderFactory.createTitledBorder("From"));
-			addTextField(this._fromField, 0, 0, 2, 1, 1, 1);
+			this._fromField.setFont(this._toFont);
+			this._fromFieldPane.setBorder(BorderFactory.createTitledBorder("From"));
+			addTextAreaPane(this._fromFieldPane, 0, 0, 2, 1, 1, 1);
 			
-			this._billToField.setBorder(BorderFactory.createTitledBorder("Bill To"));
-			addTextField(this._billToField, 0, 1, 1, 1, 1, 1);
+			this._billToField.setFont(this._toFont);
+			this._billToFieldPane.setBorder(BorderFactory.createTitledBorder("Bill To"));
+			addTextAreaPane(this._billToFieldPane, 0, 1, 1, 1, 1, 1);
 			
-			this._shipToField.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
-			addTextField(this._shipToField, 1, 1, 1, 1, 1, 1);
+			this._shipToField.setFont(this._toFont);
+			this._shipToFieldPane.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
+			addTextAreaPane(this._shipToFieldPane, 1, 1, 1, 1, 1, 1);
 		}
 		
-		private void addTextField(JTextField textField,
+		private void addTextAreaPane(JScrollPane scrollPane,
 				int gridx, int gridy,
 				int gridwidth, int gridheight,
 				double weightx, double weighty)
@@ -162,7 +172,7 @@ public class MainWindow extends JFrame
 			gbc.weightx = weightx;
 			gbc.weighty = weighty;
 			gbc.insets = new Insets(2,2,2,2);
-			this.add(textField, gbc);
+			this.add(scrollPane, gbc);
 		}
 	}
 	
@@ -183,14 +193,18 @@ public class MainWindow extends JFrame
 		private final JLabel _dueDateLbl = new JLabel("Due Date");
 		private final JDatePickerImpl _dueDatePicker;
 		
+		private final Font _detailsFont = new Font("SansSerif", Font.PLAIN, 9);
+		
 		public DetailsPanel()
 		{
 			this.setLayout(new GridBagLayout());
 			
 			addComponent(this._titleLbl, 0, 0);
+			this._titleField.setFont(this._detailsFont);
 			addComponent(this._titleField, 1, 0);
 			
 			addComponent(this._numberLbl, 0, 1);
+			this._numberField.setFont(this._detailsFont);
 			addComponent(this._numberField, 1, 1);
 			
 			addComponent(this._dateLbl, 0, 2);
@@ -204,6 +218,7 @@ public class MainWindow extends JFrame
 			addComponent(this._datePicker, 1, 2);
 			
 			addComponent(this._paymentTermsLbl, 0, 3);
+			this._paymentTermsField.setFont(this._detailsFont);
 			addComponent(this._paymentTermsField, 1, 3);
 			
 			addComponent(this._dueDateLbl, 0, 4);
@@ -361,7 +376,9 @@ public class MainWindow extends JFrame
 	
 	class NotesAndButtonsPanel extends JPanel
 	{
-		private final JTextField _notesField = new JTextField();
+		private final JTextArea _notesField = new JTextArea();
+		private final JScrollPane _notesFieldPane = new JScrollPane(this._notesField);
+		
 		private final ButtonsPanel _buttonsPanel;
 		
 		public NotesAndButtonsPanel(Dimension btnDim)
@@ -370,9 +387,12 @@ public class MainWindow extends JFrame
 			
 			this._buttonsPanel = new ButtonsPanel(btnDim);
 			
-			this._notesField.setPreferredSize(new Dimension(100, 100));
-			this._notesField.setBorder(BorderFactory.createTitledBorder("Notes (optional)"));
-			this.add(this._notesField, BorderLayout.CENTER);
+			Font notesFont = new Font("SansSerif", Font.PLAIN, 9);
+			this._notesField.setFont(notesFont);
+			this._notesField.setLineWrap(true);
+			this._notesFieldPane.setPreferredSize(new Dimension(100, 100));
+			this._notesFieldPane.setBorder(BorderFactory.createTitledBorder("Notes (optional)"));
+			this.add(this._notesFieldPane, BorderLayout.CENTER);
 			
 			this.add(this._buttonsPanel, BorderLayout.SOUTH);
 		}

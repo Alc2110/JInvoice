@@ -72,4 +72,17 @@ class InvoiceItem_Tests {
 		assertFalse(areEqual1);
 		assertFalse(areEqual2);
 	}
+	
+	@Test
+	void testEqualsObject_notInvoiceItem() {
+		// arrange
+		InvoiceItem item = new InvoiceItem("test", 5.95);
+		int notItem = 0;
+		
+		// act
+		boolean areEqual = item.equals(notItem);
+		
+		// assert
+		assertFalse(areEqual);
+	}
 }

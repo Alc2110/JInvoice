@@ -102,29 +102,13 @@ public class MainWindow extends JFrame
 		
 		public SouthPanel(Dimension btnDim)
 		{
-			this.setLayout(new GridBagLayout());
+			this.setLayout(new BorderLayout());
 			
 			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
 
-			addPanel(this._notesAndButtonsPanel, 0, 0, 2, 1, 1, 1);
-			addPanel(this._totalsPanel, 2, 0, 2, 1, 0.5, 0);
-		}
-		
-		private void addPanel(JPanel panel,
-				int gridx, int gridy,
-				int gridwidth, int gridheight,
-				double weightx, double weighty)
-		{
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.gridx = gridx;
-			gbc.gridy = gridy;
-			gbc.gridwidth = gridwidth;
-			gbc.gridheight = gridheight;
-			gbc.weightx = weightx;
-			gbc.weighty = weighty;
-			gbc.insets = new Insets(2,2,2,2);
-			this.add(panel, gbc);
+			this.add(this._notesAndButtonsPanel, BorderLayout.CENTER);
+			this._totalsPanel.setPreferredSize(new Dimension(225,this._totalsPanel.getHeight()));
+			this.add(this._totalsPanel, BorderLayout.EAST);
 		}
 	}
 	
@@ -146,14 +130,17 @@ public class MainWindow extends JFrame
 			this.setLayout(new GridBagLayout());
 			
 			this._fromField.setFont(this._toFont);
+			this._fromField.setLineWrap(true);
 			this._fromFieldPane.setBorder(BorderFactory.createTitledBorder("From"));
 			addTextAreaPane(this._fromFieldPane, 0, 0, 2, 1, 1, 1);
 			
 			this._billToField.setFont(this._toFont);
+			this._billToField.setLineWrap(true);
 			this._billToFieldPane.setBorder(BorderFactory.createTitledBorder("Bill To"));
 			addTextAreaPane(this._billToFieldPane, 0, 1, 1, 1, 1, 1);
 			
 			this._shipToField.setFont(this._toFont);
+			this._shipToField.setLineWrap(true);
 			this._shipToFieldPane.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
 			addTextAreaPane(this._shipToFieldPane, 1, 1, 1, 1, 1, 1);
 		}
@@ -199,15 +186,30 @@ public class MainWindow extends JFrame
 		{
 			this.setLayout(new GridBagLayout());
 			
-			addComponent(this._titleLbl, 0, 0);
+			addComponent(this._titleLbl, 
+					0, 0,
+					1, 1,
+					0, 0);
 			this._titleField.setFont(this._detailsFont);
-			addComponent(this._titleField, 1, 0);
+			addComponent(this._titleField, 
+					1, 0,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._numberLbl, 0, 1);
+			addComponent(this._numberLbl, 
+					0, 2,
+					1, 1,
+					0, 0);
 			this._numberField.setFont(this._detailsFont);
-			addComponent(this._numberField, 1, 1);
+			addComponent(this._numberField, 
+					1, 2,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._dateLbl, 0, 2);
+			addComponent(this._dateLbl, 
+					0, 3,
+					1, 1,
+					0, 0);
 			UtilDateModel dateModel = new UtilDateModel();
 			Properties p = new Properties();
 			p.put("text.today", "Today");
@@ -215,34 +217,48 @@ public class MainWindow extends JFrame
 			p.put("text.year", "Year");
 			JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
 			this._datePicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
-			addComponent(this._datePicker, 1, 2);
+			addComponent(this._datePicker, 
+					1, 3,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._paymentTermsLbl, 0, 3);
+			addComponent(this._paymentTermsLbl, 
+					0, 4,
+					1, 1,
+					0, 0);
 			this._paymentTermsField.setFont(this._detailsFont);
-			addComponent(this._paymentTermsField, 1, 3);
+			addComponent(this._paymentTermsField, 
+					1, 4,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._dueDateLbl, 0, 4);
+			addComponent(this._dueDateLbl, 
+					0, 5,
+					1, 1,
+					0, 0);
 			UtilDateModel dueDateModel = new UtilDateModel();
 			JDatePanelImpl dueDatePanel = new JDatePanelImpl(dueDateModel, p);
 			this._dueDatePicker = new JDatePickerImpl(dueDatePanel, new DateComponentFormatter());
-			addComponent(this._dueDatePicker, 1, 4);
+			addComponent(this._dueDatePicker, 
+					1, 5,
+					1, 1,
+					1, 0);
 		}
 		
 		private void addComponent(Component component,
-				int gridx, int gridy)
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
 		{
 			GridBagConstraints c = new GridBagConstraints();
-			/*
-			c.weightx = 1;
-			c.weighty = 1;
-			*/
-			c.weightx = 0.5;
-			c.weighty = 0;
+			c.weightx = weightx;
+			c.weighty = weighty;
+			c.gridwidth = gridwidth;
+			c.gridheight = gridheight;
 			c.fill = GridBagConstraints.BOTH;
 			c.insets = new Insets(2,2,2,2);
 			c.gridx = gridx;
 			c.gridy = gridy;
-			c.anchor = GridBagConstraints.CENTER;
 			this.add(component, c);
 		}
 	}
@@ -317,7 +333,7 @@ public class MainWindow extends JFrame
 	
 	class TotalsPanel extends JPanel
 	{
-		private final JLabel _subtotalLbl = new JLabel("Subtotal");
+		private final JLabel _subtotalLbl = new JLabel("Subtotal ($)");
 		private final JTextField _subtotalField = new JTextField();
 		
 		private final JLabel _taxLbl = new JLabel("Tax (%)");
@@ -326,50 +342,84 @@ public class MainWindow extends JFrame
 		private final JLabel _discountLbl = new JLabel("Discount (%)");
 		private final JTextField _discountField = new JTextField();
 		
-		private final JLabel _shippingLbl = new JLabel("Shipping");
+		private final JLabel _shippingLbl = new JLabel("Shipping ($)");
 		private final JTextField _shippingField = new JTextField();
 		
-		private final JLabel _totalLbl = new JLabel("Total");
+		private final JLabel _totalLbl = new JLabel("Total ($)");
 		private final JTextField _totalField = new JTextField();
 		
 		public TotalsPanel()
 		{
 			this.setLayout(new GridBagLayout());
 			
-			Font totalFont = new Font("SansSerif", Font.BOLD, 20);
-			
-			addComponent(this._subtotalLbl, 0, 0);
-			this._subtotalField.setPreferredSize(new Dimension(100,50));
+			Font totalFont = new Font("SansSerif", Font.BOLD, 14);
+
+			addComponent(this._subtotalLbl,
+					0, 0,
+					1, 1,
+					0, 0);
 			this._subtotalField.setEditable(false);
 			this._subtotalField.setFont(totalFont);
-			addComponent(this._subtotalField, 1, 0);
+			addComponent(this._subtotalField,
+					1, 0,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._taxLbl, 0, 1);
-			addComponent(this._taxField, 1, 1);
+			addComponent(this._taxLbl,
+					0, 1,
+					1, 1,
+					0, 0);
+			addComponent(this._taxField,
+					1, 1,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._discountLbl, 0, 2);
-			addComponent(this._discountField, 1, 2);
+			addComponent(this._discountLbl,
+					0, 2,
+					1, 1,
+					0.1, 0);
+			addComponent(this._discountField,
+					1, 2,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._shippingLbl, 0, 3);
-			addComponent(this._shippingField, 1, 3);
+			addComponent(this._shippingLbl,
+					0, 3,
+					1, 1,
+					0, 0);
+			addComponent(this._shippingField,
+					1, 3,
+					1, 1,
+					1, 0);
 			
-			addComponent(this._totalLbl, 0, 4);
-			this._totalField.setPreferredSize(new Dimension(100,50));
+			addComponent(this._totalLbl,
+					0, 4,
+					1, 1,
+					0, 0);
 			this._totalField.setEditable(false);
-			addComponent(this._totalField, 1, 4);
+			this._totalField.setFont(totalFont);
+			addComponent(this._totalField,
+					1, 4,
+					1, 1,
+					1, 0);
 		}
 		
 		private void addComponent(Component component,
-				int gridx, int gridy)
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
 		{
 			GridBagConstraints c = new GridBagConstraints();
 			c.weightx = 1;
 			c.weighty = 1;
-			c.fill = GridBagConstraints.BOTH;
+			c.fill = GridBagConstraints.HORIZONTAL;
 			c.insets = new Insets(2,2,2,2);
 			c.gridx = gridx;
 			c.gridy = gridy;
-			c.anchor = GridBagConstraints.CENTER;
+			c.gridwidth = gridwidth;
+			c.gridheight = gridheight;
+			c.weightx = weightx;
+			c.weighty = weighty;
 			this.add(component, c);
 		}
 	}

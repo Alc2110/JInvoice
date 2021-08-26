@@ -4,7 +4,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import com.jinvoice.models.*;
 import com.jinvoice.view.*;
+import com.jinvoice.presenter.*;
 
 /*
  * JInvoice
@@ -13,6 +15,14 @@ import com.jinvoice.view.*;
  */
 public class Main
 {
+	public Main()
+	{
+		final MainWindowImp _view = new MainWindowImp(Configuration.APP_NAME, Configuration.APP_VERSION,
+				Configuration.WINDOW_WIDTH, Configuration.WINDOW_HEIGHT,
+				Configuration.ATTRIBUTIONS);
+		new Presenter(_view);
+	}
+	
 	/*
 	 * Program entry point.
 	 */
@@ -22,37 +32,40 @@ public class Main
 		{
 			public void run()
 			{
-				// set the look and feel
-				try
-				{
-					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-				} 
-				catch (ClassNotFoundException e)
-				{
-					e.printStackTrace();
-				} 
-				catch (InstantiationException e) 
-				{
-					e.printStackTrace();
-				} 
-				catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-				} 
-				catch (UnsupportedLookAndFeelException e)
-				{
-					e.printStackTrace();
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				
-				// show the main window
-				MainWindow window = new MainWindow(Configuration.APP_NAME, Configuration.APP_VERSION,
-						Configuration.WINDOW_WIDTH, Configuration.WINDOW_HEIGHT,
-						Configuration.ATTRIBUTIONS);
-				window.setVisible(true);
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+
+						// set the look and feel
+						try
+						{
+							UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+						} 
+						catch (ClassNotFoundException e)
+						{
+							e.printStackTrace();
+						} 
+						catch (InstantiationException e) 
+						{
+							e.printStackTrace();
+						} 
+						catch (IllegalAccessException e)
+						{
+							e.printStackTrace();
+						} 
+						catch (UnsupportedLookAndFeelException e)
+						{
+							e.printStackTrace();
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
+						// show main window
+						new Main();
+					}
+				});
 			}
 		});
 	}//main

@@ -45,105 +45,130 @@ public class Invoice
 		{
 			return false;
 		}
-		else {
+		else 
+		{
 			this._items.remove(item);
 			return true;
 		}
 	}
 
-	public String getFrom() {
+	public String getFrom()
+	{
 		return _from;
 	}
 
-	public void setFrom(String from) {
+	public void setFrom(String from)
+	{
 		this._from = from;
 	}
 
-	public String getShipTo() {
+	public String getShipTo()
+	{
 		return _shipTo;
 	}
 
-	public void setShipTo(String shipTo) {
+	public void setShipTo(String shipTo) 
+	{
 		this._shipTo = shipTo;
 	}
 
-	public String getBillTo() {
+	public String getBillTo() 
+	{
 		return _billTo;
 	}
 
-	public void setBillTo(String billTo) {
+	public void setBillTo(String billTo) 
+	{
 		this._billTo = billTo;
 	}
 
-	public String getTitle() {
+	public String getTitle() 
+	{
 		return _title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(String title) 
+	{
 		this._title = title;
 	}
 
-	public int getNumber() {
+	public int getNumber() 
+	{
 		return _number;
 	}
 
-	public void setNumber(int number) {
+	public void setNumber(int number) 
+	{
 		this._number = number;
 	}
 
-	public Date getDate() {
+	public Date getDate() 
+	{
 		return _date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(Date date) 
+	{
 		this._date = date;
 	}
 
-	public String getPaymentTerms() {
+	public String getPaymentTerms() 
+	{
 		return _paymentTerms;
 	}
 
-	public void setPaymentTerms(String paymentTerms) {
+	public void setPaymentTerms(String paymentTerms) 
+	{
 		this._paymentTerms = paymentTerms;
 	}
 
-	public Date getDueDate() {
+	public Date getDueDate() 
+	{
 		return _dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(Date dueDate) 
+	{
 		this._dueDate = dueDate;
 	}
 
-	public String getNotes() {
+	public String getNotes() 
+	{
 		return _notes;
 	}
 
-	public void setNotes(String notes) {
+	public void setNotes(String notes) 
+	{
 		this._notes = notes;
 	}
 
-	public double getTax() {
+	public double getTax() 
+	{
 		return _tax;
 	}
 
-	public void setTax(double tax) {
+	public void setTax(double tax) 
+	{
 		this._tax = tax;
 	}
 
-	public double getDiscount() {
+	public double getDiscount() 
+	{
 		return _discount;
 	}
 
-	public void setDiscount(double discount) {
+	public void setDiscount(double discount) 
+	{
 		this._discount = discount;
 	}
 
-	public double getShipping() {
+	public double getShipping() 
+	{
 		return _shipping;
 	}
 
-	public void setShipping(double _shipping) {
+	public void setShipping(double _shipping) 
+	{
 		this._shipping = _shipping;
-	}
-}
+	}//setShipping
+}//class

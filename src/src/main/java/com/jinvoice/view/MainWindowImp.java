@@ -1,0 +1,990 @@
+package com.jinvoice.view;
+
+import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
+
+import org.jdatepicker.JDatePicker;
+import org.jdatepicker.impl.DateComponentFormatter;
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.UtilDateModel;
+
+import com.jinvoice.models.InvoiceItem;
+import com.jinvoice.presenter.*;
+
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
+import java.text.SimpleDateFormat;
+
+/*
+ * Application main window.
+ */
+public class MainWindowImp extends JFrame implements IMainWindow
+{
+	private final JPanel _mainPanel = new JPanel();
+	
+	private final JMenuBar _menuBar = new JMenuBar();
+	private final JMenu _fileMenu = new JMenu("File");
+	private final JMenuItem _fileExitMenuItem = new JMenuItem("Exit");
+	private final JMenu _helpMenu = new JMenu("Help");
+	private final JMenuItem _helpAboutMenuItem = new JMenuItem("About");
+
+	private final NorthPanel _northPanel = new NorthPanel();
+	
+	private final ItemsTablePanel _itemsTablePanel = new ItemsTablePanel();
+
+	private final SouthPanel _southPanel = new SouthPanel(this._itemsTablePanel.getButtonSize());
+	
+	private final ArrayList<IViewListener> _listeners = new ArrayList<IViewListener>();
+	
+	/*
+	 * Constructor.
+	 */
+	public MainWindowImp(String title, String version, int windowWidth, int windowHeight, String[] attributions)
+	{
+		// set window properties
+		this.setTitle(title);
+		this.setSize(windowWidth, windowHeight);
+		
+		// create menubar
+		this._fileMenu.add(this._fileExitMenuItem);
+		this._menuBar.add(this._fileMenu);
+		this._helpMenu.add(this._helpAboutMenuItem);
+		this._menuBar.add(this._helpMenu);
+		this.setJMenuBar(this._menuBar);
+		this._fileExitMenuItem.addActionListener((event) -> System.exit(0));
+		this._helpAboutMenuItem.addActionListener(((event) ->
+		{
+			JOptionPane.showMessageDialog(this, "Simple invoice generator. Creates invoices in Excel format. \n\n" + this.buildAttributionText(attributions), "About " + title, JOptionPane.INFORMATION_MESSAGE);
+		}));
+
+		this._mainPanel.setLayout(new BorderLayout());
+		
+		// add subpanels
+		this._mainPanel.add(this._northPanel, BorderLayout.NORTH);
+		this._mainPanel.add(this._itemsTablePanel, BorderLayout.CENTER);
+		this._mainPanel.add(this._southPanel, BorderLayout.SOUTH);
+		
+		// register events
+		// buttons
+		this._itemsTablePanel._btnsPanel._addBtn.addActionListener((event) -> {
+			for (final IViewListener listener : this._listeners) {
+				listener.onAddItemButtonClicked();
+			}
+		});
+		this._itemsTablePanel._btnsPanel._removeBtn.addActionListener((event) -> {
+			for (final IViewListener listener : this._listeners) {
+				listener.onRemoveSelectedItemButtonClicked();
+			}
+		});
+		this._southPanel._notesAndButtonsPanel._buttonsPanel._createButton.addActionListener((event) -> {
+			for (final IViewListener listener: this._listeners) {
+				listener.onCreateButtonClicked();
+			}
+		});
+		this._southPanel._notesAndButtonsPanel._buttonsPanel._cancelButton.addActionListener((event) -> {
+			for (final IViewListener listener : this._listeners) {
+				listener.onCancelButtonClicked();
+			}
+		});
+		// remaining components
+		this._itemsTablePanel._table.getSelectionModel().addListSelectionListener((event) -> {
+			for (final IViewListener listener: this._listeners) {
+				if (!event.getValueIsAdjusting())
+					listener.onItemsSelected();
+			}
+		});
+		this._northPanel._toPanel._billToField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._northPanel._toPanel._fromField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._northPanel._toPanel._shipToField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._northPanel._detailsPanel._titleField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._northPanel._detailsPanel._numberField.addChangeListener(new SpinnerListener(this._listeners));
+		this._northPanel._detailsPanel._paymentTermsField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._northPanel._detailsPanel._datePicker.getModel().addChangeListener(new DateChangeListener(this._listeners));
+		this._northPanel._detailsPanel._dueDatePicker.getModel().addChangeListener(new DateChangeListener(this._listeners));
+		this._southPanel._notesAndButtonsPanel._notesField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._southPanel._totalsPanel._shippingField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._southPanel._totalsPanel._subtotalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._southPanel._totalsPanel._totalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		this._southPanel._totalsPanel._taxField.addChangeListener(new SpinnerListener(this._listeners));
+		this._southPanel._totalsPanel._discountField.addChangeListener(new SpinnerListener(this._listeners));
+		
+		this.add(this._mainPanel);
+		
+		this.setVisible(true);
+	}//ctor
+	
+	private class InputFieldListener implements DocumentListener
+	{
+		private ArrayList<IViewListener> _listeners;
+		
+		public InputFieldListener(ArrayList<IViewListener> listeners)
+		{
+			this._listeners = listeners;
+		}
+		
+		@Override
+		public void changedUpdate(DocumentEvent arg0)
+		{
+			notifyListeners();	
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent arg0)
+		{
+			notifyListeners();
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent arg0)
+		{
+			notifyListeners();
+		}
+		
+		private void notifyListeners()
+		{
+			for (final IViewListener listener : this._listeners)
+			{
+				listener.onInputFieldUpdated();
+			}
+		}
+	}
+	
+	private class SpinnerListener implements ChangeListener
+	{
+		private ArrayList<IViewListener> _listeners;
+		
+		public SpinnerListener(ArrayList<IViewListener> listeners)
+		{
+			this._listeners = listeners;
+		}
+
+		@Override
+		public void stateChanged(ChangeEvent arg0)
+		{
+			for (final IViewListener listener : this._listeners)
+			{
+				listener.onInputFieldUpdated();
+			}
+		}
+	}
+	
+	private class DateChangeListener implements ChangeListener
+	{
+		private ArrayList<IViewListener> _listeners;
+		
+		public DateChangeListener(ArrayList<IViewListener> listeners)
+		{
+			this._listeners = listeners;
+		}
+		
+		@Override
+		public void stateChanged(ChangeEvent arg0)
+		{
+			for (final IViewListener listener : this._listeners)
+			{
+				listener.onInputFieldUpdated();
+			}
+		}
+	}
+	
+	public void addViewListener(IViewListener listener)
+	{
+		this._listeners.add(listener);
+	}
+	
+	private class NorthPanel extends JPanel
+	{
+		private final ToPanel _toPanel = new ToPanel();
+		private final DetailsPanel _detailsPanel = new DetailsPanel();
+		
+		public NorthPanel()
+		{
+			this.setLayout(new GridBagLayout());
+
+			addPanel(this._toPanel, 0, 0, 2, 1, 1, 1);
+			addPanel(this._detailsPanel, 2, 0, 2, 1, 0.5, 0);
+		}
+		
+		private void addPanel(JPanel panel,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.weightx = weightx;
+			gbc.weighty = weighty;
+			gbc.insets = new Insets(2,2,2,2);
+			this.add(panel, gbc);
+		}
+	}
+	
+	private class SouthPanel extends JPanel
+	{
+		private final TotalsPanel _totalsPanel = new TotalsPanel();
+		private final NotesAndButtonsPanel _notesAndButtonsPanel;
+		
+		public SouthPanel(Dimension btnDim)
+		{
+			this.setLayout(new BorderLayout());
+			
+			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
+
+			this.add(this._notesAndButtonsPanel, BorderLayout.CENTER);
+			this._totalsPanel.setPreferredSize(new Dimension(225,this._totalsPanel.getHeight()));
+			this.add(this._totalsPanel, BorderLayout.EAST);
+		}
+	}
+	
+	private class ToPanel extends JPanel
+	{
+		private JTextArea _fromField = new JTextArea();
+		private JScrollPane _fromFieldPane = new JScrollPane(this._fromField);
+		
+		private JTextArea _billToField = new JTextArea();
+		private JScrollPane _billToFieldPane = new JScrollPane(this._billToField);
+		
+		private JTextArea _shipToField = new JTextArea();
+		private JScrollPane _shipToFieldPane = new JScrollPane(this._shipToField);
+		
+		private final Font _toFont = new Font("SansSerif", Font.PLAIN, 9);
+		
+		public ToPanel()
+		{
+			this.setLayout(new GridBagLayout());
+			
+			this._fromField.setFont(this._toFont);
+			this._fromField.setLineWrap(true);
+			this._fromFieldPane.setBorder(BorderFactory.createTitledBorder("From"));
+			addTextAreaPane(this._fromFieldPane, 0, 0, 2, 1, 1, 1);
+			
+			this._billToField.setFont(this._toFont);
+			this._billToField.setLineWrap(true);
+			this._billToFieldPane.setBorder(BorderFactory.createTitledBorder("Bill To"));
+			addTextAreaPane(this._billToFieldPane, 0, 1, 1, 1, 1, 1);
+			
+			this._shipToField.setFont(this._toFont);
+			this._shipToField.setLineWrap(true);
+			this._shipToFieldPane.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
+			addTextAreaPane(this._shipToFieldPane, 1, 1, 1, 1, 1, 1);
+		} 
+		
+		private void addTextAreaPane(JScrollPane scrollPane,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints gbc = new GridBagConstraints();
+			gbc.fill = GridBagConstraints.BOTH;
+			gbc.gridx = gridx;
+			gbc.gridy = gridy;
+			gbc.gridwidth = gridwidth;
+			gbc.gridheight = gridheight;
+			gbc.weightx = weightx;
+			gbc.weighty = weighty;
+			gbc.insets = new Insets(2,2,2,2);
+			this.add(scrollPane, gbc);
+		}
+	}
+	
+	private class DetailsPanel extends JPanel
+	{
+		private final JLabel _titleLbl = new JLabel("Title");
+		private final JTextField _titleField = new JTextField();
+		
+		private final JLabel _numberLbl = new JLabel("Number");
+		private final JSpinner _numberField = new JSpinner();
+		
+		private final JLabel _dateLbl = new JLabel("Date");
+		private final JDatePickerImpl _datePicker;
+		
+		private final JLabel _paymentTermsLbl = new JLabel("Payment Terms");
+		private final JTextField _paymentTermsField = new JTextField();
+		
+		private final JLabel _dueDateLbl = new JLabel("Due Date");
+		private final JDatePickerImpl _dueDatePicker;
+		
+		private final Font _detailsFont = new Font("SansSerif", Font.PLAIN, 9);
+		
+		public DetailsPanel()
+		{
+			this.setLayout(new GridBagLayout());
+			
+			addComponent(this._titleLbl, 
+					0, 0,
+					1, 1,
+					0, 0);
+			this._titleField.setFont(this._detailsFont);
+			addComponent(this._titleField, 
+					1, 0,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._numberLbl, 
+					0, 2,
+					1, 1,
+					0, 0);
+
+			SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel();
+			addComponent(this._numberField, 
+					1, 2,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._dateLbl, 
+					0, 3,
+					1, 1,
+					0, 0);
+			UtilDateModel dateModel = new UtilDateModel();
+			Properties p = new Properties();
+			p.put("text.today", "Today");
+			p.put("text.month", "Month");
+			p.put("text.year", "Year");
+			JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
+			this._datePicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
+			addComponent(this._datePicker, 
+					1, 3,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._paymentTermsLbl, 
+					0, 4,
+					1, 1,
+					0, 0);
+			this._paymentTermsField.setFont(this._detailsFont);
+			addComponent(this._paymentTermsField, 
+					1, 4,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._dueDateLbl, 
+					0, 5,
+					1, 1,
+					0, 0);
+			UtilDateModel dueDateModel = new UtilDateModel();
+			JDatePanelImpl dueDatePanel = new JDatePanelImpl(dueDateModel, p);
+			this._dueDatePicker = new JDatePickerImpl(dueDatePanel, new DateComponentFormatter());
+			addComponent(this._dueDatePicker, 
+					1, 5,
+					1, 1,
+					1, 0);
+		}
+		
+		private void addComponent(Component component,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints c = new GridBagConstraints();
+			c.weightx = weightx;
+			c.weighty = weighty;
+			c.gridwidth = gridwidth;
+			c.gridheight = gridheight;
+			c.fill = GridBagConstraints.BOTH;
+			c.insets = new Insets(2,2,2,2);
+			c.gridx = gridx;
+			c.gridy = gridy;
+			this.add(component, c);
+		}
+	}
+	
+	private class ItemsTablePanel extends JPanel
+	{
+		private final JTable _table = new JTable();
+		private final JScrollPane _scrollPane;
+		
+		private final String[] TABLE_HEADERS = new String[]
+				{
+						"Description", 
+						"Price",
+						"Quantity",
+						"Amount"
+				};
+		
+		private final ButtonsPanel _btnsPanel = new ButtonsPanel();
+		
+		public ItemsTablePanel()
+		{
+			this.setLayout(new BorderLayout());
+			
+			DefaultTableModel tableModel = new DefaultTableModel()
+			{
+				@Override
+				public boolean isCellEditable(int i, int i1)
+				{
+					return false;
+				}
+			};
+			tableModel.addColumn(TABLE_HEADERS[0]);
+			tableModel.addColumn(TABLE_HEADERS[1]);
+			tableModel.addColumn(TABLE_HEADERS[2]);
+			tableModel.addColumn(TABLE_HEADERS[3]);
+			this._table.setModel(tableModel);
+			this._table.setFillsViewportHeight(true);
+			this._scrollPane = new JScrollPane(this._table);
+			this._scrollPane.setViewportView(this._table);
+			this._scrollPane.setBorder(BorderFactory.createTitledBorder("Items"));
+			this.add(this._scrollPane, BorderLayout.CENTER);
+			
+			this.add(this._btnsPanel, BorderLayout.SOUTH);
+		}
+		
+		public Dimension getButtonSize()
+		{
+			return this._btnsPanel.getButtonSize();
+		}
+		
+		private class ButtonsPanel extends JPanel
+		{
+			private final JButton _addBtn = new JButton("Add");
+			private final JButton _removeBtn = new JButton("Remove Selected");
+			
+			public ButtonsPanel()
+			{
+				this.setLayout(new FlowLayout());
+				
+				this._addBtn.setPreferredSize(getButtonSize());
+				
+				this.add(this._addBtn);
+				this.add(this._removeBtn);
+			}
+			
+			public Dimension getButtonSize()
+			{
+				return this._removeBtn.getPreferredSize();
+			}
+		}
+	}
+	
+	private class TotalsPanel extends JPanel
+	{
+		private final JLabel _subtotalLbl = new JLabel("Subtotal ($)");
+		private final JTextField _subtotalField = new JTextField();
+		
+		private final JLabel _taxLbl = new JLabel("Tax (%)");
+		private final JSpinner _taxField = new JSpinner();
+		
+		private final JLabel _discountLbl = new JLabel("Discount (%)");
+		private final JSpinner _discountField = new JSpinner();
+		
+		private final JLabel _shippingLbl = new JLabel("Shipping ($)");
+		private final JTextField _shippingField = new JTextField();
+		
+		private final JLabel _totalLbl = new JLabel("Total ($)");
+		private final JTextField _totalField = new JTextField();
+		
+		public TotalsPanel()
+		{
+			this.setLayout(new GridBagLayout());
+			
+			Font totalFont = new Font("SansSerif", Font.BOLD, 14);
+			SpinnerNumberModel taxPercentSpinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
+			SpinnerNumberModel discountPercentSpinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
+
+			addComponent(this._subtotalLbl,
+					0, 0,
+					1, 1,
+					0, 0);
+			this._subtotalField.setEditable(false);
+			this._subtotalField.setFont(totalFont);
+			addComponent(this._subtotalField,
+					1, 0,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._taxLbl,
+					0, 1,
+					1, 1,
+					0, 0);
+			this._taxField.setModel(taxPercentSpinnerModel);
+			addComponent(this._taxField,
+					1, 1,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._discountLbl,
+					0, 2,
+					1, 1,
+					0.1, 0);
+			this._discountField.setModel(discountPercentSpinnerModel);
+			addComponent(this._discountField,
+					1, 2,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._shippingLbl,
+					0, 3,
+					1, 1,
+					0, 0);
+			addComponent(this._shippingField,
+					1, 3,
+					1, 1,
+					1, 0);
+			
+			addComponent(this._totalLbl,
+					0, 4,
+					1, 1,
+					0, 0);
+			this._totalField.setEditable(false);
+			this._totalField.setFont(totalFont);
+			addComponent(this._totalField,
+					1, 4,
+					1, 1,
+					1, 0);
+		}
+		
+		private void addComponent(Component component,
+				int gridx, int gridy,
+				int gridwidth, int gridheight,
+				double weightx, double weighty)
+		{
+			GridBagConstraints c = new GridBagConstraints();
+			c.weightx = 1;
+			c.weighty = 1;
+			c.fill = GridBagConstraints.HORIZONTAL;
+			c.insets = new Insets(2,2,2,2);
+			c.gridx = gridx;
+			c.gridy = gridy;
+			c.gridwidth = gridwidth;
+			c.gridheight = gridheight;
+			c.weightx = weightx;
+			c.weighty = weighty;
+			this.add(component, c);
+		}
+	}
+	
+	private class NotesAndButtonsPanel extends JPanel
+	{
+		private final JTextArea _notesField = new JTextArea();
+		private final JScrollPane _notesFieldPane = new JScrollPane(this._notesField);
+		
+		private final ButtonsPanel _buttonsPanel;
+		
+		public NotesAndButtonsPanel(Dimension btnDim)
+		{
+			this.setLayout(new BorderLayout());
+			
+			this._buttonsPanel = new ButtonsPanel(btnDim);
+			
+			Font notesFont = new Font("SansSerif", Font.PLAIN, 9);
+			this._notesField.setFont(notesFont);
+			this._notesField.setLineWrap(true);
+			this._notesFieldPane.setPreferredSize(new Dimension(100, 100));
+			this._notesFieldPane.setBorder(BorderFactory.createTitledBorder("Notes (optional)"));
+			this.add(this._notesFieldPane, BorderLayout.CENTER);
+			
+			this.add(this._buttonsPanel, BorderLayout.SOUTH);
+		}
+		
+		private class ButtonsPanel extends JPanel
+		{
+			private final JButton _createButton = new JButton("Create");
+			private final JButton _cancelButton = new JButton("Cancel");
+			
+			public ButtonsPanel(Dimension btnDim)
+			{
+				this.setLayout(new FlowLayout());
+				
+				this._createButton.setPreferredSize(btnDim);
+				this.add(this._createButton);
+				this._cancelButton.setPreferredSize(btnDim);
+				this.add(this._cancelButton);
+			}
+		}
+	}
+	
+	private String buildAttributionText(String[] attributions)
+	{
+		StringBuilder builder = new StringBuilder();
+		builder.append("Thanks to: \n");
+		for (final String a : attributions)
+		{
+			builder.append(a + "\n");
+		}
+		
+		return builder.toString();
+	}//buildAttributionText
+
+	@Override
+	public String getFromText()
+	{
+		return this._northPanel._toPanel._fromField.getText();
+	}
+
+	@Override
+	public void setFromText(String from)
+	{
+		this._northPanel._toPanel._fromField.setText(from);
+	}
+
+	@Override
+	public String getBillTo()
+	{
+		return this._northPanel._toPanel._billToField.getText();
+	}
+
+	@Override
+	public void setBillTo(String billTo)
+	{
+		this._northPanel._toPanel._billToField.setText(billTo);
+	}
+
+	@Override
+	public String getShipTo()
+	{
+		return this._northPanel._toPanel._shipToField.getText();
+	}
+
+	@Override
+	public void setShipTo(String shipTo)
+	{
+		this._northPanel._toPanel._shipToField.setText(shipTo);
+	}
+
+	@Override
+	public int getNumber()
+	{
+		return (int)this._northPanel._detailsPanel._numberField.getModel().getValue();
+	}
+
+	@Override
+	public void setNumber(int number)
+	{
+		this._northPanel._detailsPanel._numberField.getModel().setValue(number);
+	}
+
+	@Override
+	public Date getDate()
+	{
+		return (Date)this._northPanel._detailsPanel._datePicker.getModel().getValue();
+	}
+
+	@Override
+	public void setDate(Date date)
+	{
+		this._northPanel._detailsPanel._datePicker.getModel().setDate(date.getYear(), date.getMonth(), date.getDay());
+	}
+
+	@Override
+	public String getPaymentTerms()
+	{
+		return this._northPanel._detailsPanel._paymentTermsField.getText();
+	}
+
+	@Override
+	public void setPaymentTerms(String paymentTerms)
+	{
+		this._northPanel._detailsPanel._paymentTermsField.setText(paymentTerms);
+	}
+
+	@Override
+	public Date getDueDate()
+	{
+		return (Date)this._northPanel._detailsPanel._dueDatePicker.getModel().getValue();
+	}
+
+	@Override
+	public void setDueDate(Date date)
+	{
+		this._northPanel._detailsPanel._dueDatePicker.getModel().setDate(date.getYear(), date.getMonth(), date.getDay());
+	}
+
+	@Override
+	public ArrayList<InvoiceItem> getItems()
+	{
+		ArrayList<InvoiceItem> items = new ArrayList<InvoiceItem>();
+		int rows = this._itemsTablePanel._table.getRowCount();
+		for (int row = 0; row < rows; row++)
+		{
+			for (int i = 1; i <= (int)(this._itemsTablePanel._table.getModel().getValueAt(row, 2)); i++)
+			{
+				items.add(new InvoiceItem(
+						(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
+						(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+						));
+			}
+		}
+		
+		return items;
+	}
+
+	@Override
+	public ArrayList<InvoiceItem> getSelectedItems()
+	{
+		ArrayList<InvoiceItem> selectedItems = new ArrayList<InvoiceItem>();
+		int[] rows = this._itemsTablePanel._table.getSelectedRows();
+		for (final int row : rows)
+		{
+			selectedItems.add(new InvoiceItem(
+					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
+					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+					));
+		}
+		
+		return selectedItems;
+	}
+
+	@Override
+	public void addItem(InvoiceItem item)
+	{
+		ArrayList<InvoiceItem> items = new ArrayList<InvoiceItem>();
+		int rows = this._itemsTablePanel._table.getRowCount();
+		for (int row = 0; row < rows; row++)
+		{
+			InvoiceItem currentItem = new InvoiceItem(
+					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
+					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+					);
+			// TODO: figure out why equals() does not work
+			if (currentItem.getDescription().equals(item.getDescription()) && 
+				currentItem.getPrice() == item.getPrice())
+			{
+				// item already exists, increment the count
+				int currQuantity = (int)this._itemsTablePanel._table.getModel().getValueAt(row, 2);
+				this._itemsTablePanel._table.getModel().setValueAt(currQuantity+1, row, 2);
+				this._itemsTablePanel._table.getModel().setValueAt(item.getPrice()*(currQuantity+1), row, 3);
+				// nothing more to do
+				return;
+			}
+		}
+		// item does not yet exist, just add it
+		DefaultTableModel tableModel = (DefaultTableModel)this._itemsTablePanel._table.getModel();
+		tableModel.addRow(new Object[] {item.getDescription(), item.getPrice(), 1, item.getPrice()});
+	}
+
+	@Override
+	public boolean removeItem(InvoiceItem item)
+	{
+		// TODO Auto-generated method stub
+		int rows = this._itemsTablePanel._table.getRowCount();
+		for (int row = 0; row < rows; row++)
+		{
+			InvoiceItem currentItem = new InvoiceItem(
+					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
+					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+					);
+			// TODO: figure out why equals() does not work
+			if (currentItem.getDescription().equals(item.getDescription()) && 
+					currentItem.getPrice() == item.getPrice())
+			{
+				// remove this item
+				DefaultTableModel model = (DefaultTableModel)this._itemsTablePanel._table.getModel();
+				model.removeRow(row);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean getAddItemButtonEnabled()
+	{
+		return this._itemsTablePanel._btnsPanel._addBtn.isEnabled();
+	}
+
+	@Override
+	public void setAddItemButtonEnabled(boolean enabled)
+	{
+		this._itemsTablePanel._btnsPanel._addBtn.setEnabled(enabled);
+	}
+	
+	@Override
+	public ArrayList<InvoiceItem> showAddItemDialog()
+	{
+		JTextField descriptionField = new JTextField();
+		JTextField priceField = new JTextField();
+		JSpinner quantityField = new JSpinner();
+		final JComponent[] inputs = new JComponent[] {new JLabel("Description"), descriptionField, new JLabel("Price"), priceField, new JLabel("Quantity"), quantityField};
+		int dialogResult = JOptionPane.showConfirmDialog(this, inputs, "Add Item", JOptionPane.PLAIN_MESSAGE);
+		if (dialogResult == JOptionPane.OK_OPTION)
+		{
+			double price;
+			try
+			{
+				price = Double.parseDouble(priceField.getText());
+			}
+			catch (Exception e)
+			{
+				JOptionPane.showMessageDialog(this, "Please enter a valid price.", "Error", JOptionPane.ERROR_MESSAGE);
+				
+				return null;
+			}
+			
+			ArrayList<InvoiceItem> items = new ArrayList<InvoiceItem>();
+			for (int i = 1; i <= (int)quantityField.getModel().getValue(); i++)
+			{
+				items.add(new InvoiceItem(descriptionField.getText(), price));
+			}
+			
+			return items;
+		}
+		else
+		{
+			return null;
+		}
+	}
+
+	@Override
+	public boolean getRemoveSelectedItemButtonEnabled()
+	{
+		return this._itemsTablePanel._btnsPanel._removeBtn.isEnabled();
+	}
+
+	@Override
+	public void setRemoveSelectedItemButtonEnabled(boolean enabled)
+	{
+		this._itemsTablePanel._btnsPanel._removeBtn.setEnabled(enabled);
+	}
+
+	@Override
+	public String getNotes()
+	{
+		return this._southPanel._notesAndButtonsPanel._notesField.getText();
+	}
+
+	@Override
+	public void setNotes(String notes)
+	{
+		this._southPanel._notesAndButtonsPanel._notesField.setText(notes);
+	}
+
+	@Override
+	public double getSubtotal()
+	{
+		try
+		{
+			return Double.parseDouble(this._southPanel._totalsPanel._subtotalField.getText());
+		}
+		catch (Exception e)
+		{
+			setSubtotal(0);
+			return 0;
+		}
+	}
+
+	@Override
+	public void setSubtotal(double subtotal)
+	{
+		this._southPanel._totalsPanel._subtotalField.setText(String.valueOf(subtotal));
+	}
+
+	@Override
+	public int getTaxPercent()
+	{
+		// commit the value
+		// ensures manually-typed values are reflected in the model
+		try
+		{
+			this._southPanel._totalsPanel._taxField.commitEdit();
+		}
+		catch (java.text.ParseException e)
+		{
+			return 0;
+		}
+		
+		return (Integer)this._southPanel._totalsPanel._taxField.getValue();
+	}
+
+	@Override
+	public void setTaxPercent(int percent)
+	{
+		this._southPanel._totalsPanel._taxField.setValue(percent);
+	}
+
+	@Override
+	public int getDiscountPercent()
+	{
+		// commit the value
+		// ensures manually-typed values are reflected in the model
+		try
+		{
+			this._southPanel._totalsPanel._discountField.commitEdit();
+		}
+		catch (java.text.ParseException e)
+		{
+			return 0;
+		}
+
+		return (Integer)this._southPanel._totalsPanel._discountField.getValue();
+	}
+
+	@Override
+	public void setDiscountPercent(int percent)
+	{
+		this._southPanel._totalsPanel._discountField.setValue(percent);
+	}
+
+	@Override
+	public double getShipping()
+	{
+		try
+		{
+			return Double.parseDouble(this._southPanel._totalsPanel._shippingField.getText());
+		}
+		catch (Exception e)
+		{
+			this.setShipping(0);
+			return 0;
+		}
+	}
+
+	@Override
+	public void setShipping(double shipping)
+	{
+		this._southPanel._totalsPanel._shippingField.setText(String.valueOf(shipping));
+	}
+
+	@Override
+	public double getTotal()
+	{
+		try
+		{
+			return Double.parseDouble(this._southPanel._totalsPanel._totalField.getText());
+		}
+		catch (Exception e)
+		{
+			this.setTotal(0);
+			return 0;
+		}
+	}
+
+	@Override
+	public void setTotal(double total)
+	{
+		this._southPanel._totalsPanel._totalField.setText(String.valueOf(total));
+	}
+
+	@Override
+	public boolean getCreateButtonEnabled()
+	{
+		return this._southPanel._notesAndButtonsPanel._buttonsPanel._createButton.isEnabled();
+	}
+
+	@Override
+	public void setCreateButtonEnabled(boolean enabled) 
+	{
+		this._southPanel._notesAndButtonsPanel._buttonsPanel._createButton.setEnabled(enabled);
+	}
+
+	@Override
+	public boolean getCancelButtonEnabled()
+	{
+		return this._southPanel._notesAndButtonsPanel._buttonsPanel._cancelButton.isEnabled();
+	}
+
+	@Override
+	public void setCancelButtonEnabled(boolean enabled)
+	{
+		this._southPanel._notesAndButtonsPanel._buttonsPanel._cancelButton.setEnabled(enabled);
+	}
+}//class

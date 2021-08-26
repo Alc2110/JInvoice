@@ -55,4 +55,10 @@ public class InvoiceItem
 	{
 		return Objects.hash(this._description, this._price);
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this._description + "; " + this._price;
+	}
 }//class

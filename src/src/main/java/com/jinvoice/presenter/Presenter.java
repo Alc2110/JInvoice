@@ -11,7 +11,7 @@ import com.jinvoice.view.*;
 public class Presenter implements IViewListener
 {
 	private final IMainWindow _view;
-	
+
 	public Presenter(IMainWindow view)
 	{
 		this._view = view;

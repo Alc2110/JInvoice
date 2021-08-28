@@ -117,207 +117,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		this._listeners.add(listener);
 	}
-	
-	private class NorthPanel extends JPanel
-	{
-		private final ToPanel _toPanel = new ToPanel();
-		private final DetailsPanel _detailsPanel = new DetailsPanel();
-		
-		public NorthPanel()
-		{
-			this.setLayout(new GridBagLayout());
 
-			addPanel(this._toPanel, 0, 0, 2, 1, 1, 1);
-			addPanel(this._detailsPanel, 2, 0, 2, 1, 0.5, 0);
-		}
-		
-		private void addPanel(JPanel panel,
-				int gridx, int gridy,
-				int gridwidth, int gridheight,
-				double weightx, double weighty)
-		{
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.gridx = gridx;
-			gbc.gridy = gridy;
-			gbc.gridwidth = gridwidth;
-			gbc.gridheight = gridheight;
-			gbc.weightx = weightx;
-			gbc.weighty = weighty;
-			gbc.insets = new Insets(2,2,2,2);
-			this.add(panel, gbc);
-		}
-	}
-	
-	private class SouthPanel extends JPanel
-	{
-		private final TotalsPanel _totalsPanel = new TotalsPanel();
-		private final NotesAndButtonsPanel _notesAndButtonsPanel;
-		
-		public SouthPanel(Dimension btnDim)
-		{
-			this.setLayout(new BorderLayout());
-			
-			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
-
-			this.add(this._notesAndButtonsPanel, BorderLayout.CENTER);
-			this._totalsPanel.setPreferredSize(new Dimension(225,this._totalsPanel.getHeight()));
-			this.add(this._totalsPanel, BorderLayout.EAST);
-		}
-	}
-	
-	private class ToPanel extends JPanel
-	{
-		private JTextArea _fromField = new JTextArea();
-		private JScrollPane _fromFieldPane = new JScrollPane(this._fromField);
-		
-		private JTextArea _billToField = new JTextArea();
-		private JScrollPane _billToFieldPane = new JScrollPane(this._billToField);
-		
-		private JTextArea _shipToField = new JTextArea();
-		private JScrollPane _shipToFieldPane = new JScrollPane(this._shipToField);
-		
-		private final Font _toFont = new Font("SansSerif", Font.PLAIN, 9);
-		
-		public ToPanel()
-		{
-			this.setLayout(new GridBagLayout());
-			
-			this._fromField.setFont(this._toFont);
-			this._fromField.setLineWrap(true);
-			this._fromFieldPane.setBorder(BorderFactory.createTitledBorder("From"));
-			addTextAreaPane(this._fromFieldPane, 0, 0, 2, 1, 1, 1);
-			
-			this._billToField.setFont(this._toFont);
-			this._billToField.setLineWrap(true);
-			this._billToFieldPane.setBorder(BorderFactory.createTitledBorder("Bill To"));
-			addTextAreaPane(this._billToFieldPane, 0, 1, 1, 1, 1, 1);
-			
-			this._shipToField.setFont(this._toFont);
-			this._shipToField.setLineWrap(true);
-			this._shipToFieldPane.setBorder(BorderFactory.createTitledBorder("Ship To (optional)"));
-			addTextAreaPane(this._shipToFieldPane, 1, 1, 1, 1, 1, 1);
-		} 
-		
-		private void addTextAreaPane(JScrollPane scrollPane,
-				int gridx, int gridy,
-				int gridwidth, int gridheight,
-				double weightx, double weighty)
-		{
-			GridBagConstraints gbc = new GridBagConstraints();
-			gbc.fill = GridBagConstraints.BOTH;
-			gbc.gridx = gridx;
-			gbc.gridy = gridy;
-			gbc.gridwidth = gridwidth;
-			gbc.gridheight = gridheight;
-			gbc.weightx = weightx;
-			gbc.weighty = weighty;
-			gbc.insets = new Insets(2,2,2,2);
-			this.add(scrollPane, gbc);
-		}
-	}
-	
-	private class DetailsPanel extends JPanel
-	{
-		private final JLabel _titleLbl = new JLabel("Title");
-		private final JTextField _titleField = new JTextField();
-		
-		private final JLabel _numberLbl = new JLabel("Number");
-		private final JSpinner _numberField = new JSpinner();
-		
-		private final JLabel _dateLbl = new JLabel("Date");
-		private final JDatePickerImpl _datePicker;
-		
-		private final JLabel _paymentTermsLbl = new JLabel("Payment Terms");
-		private final JTextField _paymentTermsField = new JTextField();
-		
-		private final JLabel _dueDateLbl = new JLabel("Due Date");
-		private final JDatePickerImpl _dueDatePicker;
-		
-		private final Font _detailsFont = new Font("SansSerif", Font.PLAIN, 9);
-		
-		public DetailsPanel()
-		{
-			this.setLayout(new GridBagLayout());
-			
-			addComponent(this._titleLbl, 
-					0, 0,
-					1, 1,
-					0, 0);
-			this._titleField.setFont(this._detailsFont);
-			addComponent(this._titleField, 
-					1, 0,
-					1, 1,
-					1, 0);
-			
-			addComponent(this._numberLbl, 
-					0, 2,
-					1, 1,
-					0, 0);
-
-			SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel();
-			addComponent(this._numberField, 
-					1, 2,
-					1, 1,
-					1, 0);
-			
-			addComponent(this._dateLbl, 
-					0, 3,
-					1, 1,
-					0, 0);
-			UtilDateModel dateModel = new UtilDateModel();
-			Properties p = new Properties();
-			p.put("text.today", "Today");
-			p.put("text.month", "Month");
-			p.put("text.year", "Year");
-			JDatePanelImpl datePanel = new JDatePanelImpl(dateModel, p);
-			this._datePicker = new JDatePickerImpl(datePanel, new DateComponentFormatter());
-			addComponent(this._datePicker, 
-					1, 3,
-					1, 1,
-					1, 0);
-			
-			addComponent(this._paymentTermsLbl, 
-					0, 4,
-					1, 1,
-					0, 0);
-			this._paymentTermsField.setFont(this._detailsFont);
-			addComponent(this._paymentTermsField, 
-					1, 4,
-					1, 1,
-					1, 0);
-			
-			addComponent(this._dueDateLbl, 
-					0, 5,
-					1, 1,
-					0, 0);
-			UtilDateModel dueDateModel = new UtilDateModel();
-			JDatePanelImpl dueDatePanel = new JDatePanelImpl(dueDateModel, p);
-			this._dueDatePicker = new JDatePickerImpl(dueDatePanel, new DateComponentFormatter());
-			addComponent(this._dueDatePicker, 
-					1, 5,
-					1, 1,
-					1, 0);
-		}
-		
-		private void addComponent(Component component,
-				int gridx, int gridy,
-				int gridwidth, int gridheight,
-				double weightx, double weighty)
-		{
-			GridBagConstraints c = new GridBagConstraints();
-			c.weightx = weightx;
-			c.weighty = weighty;
-			c.gridwidth = gridwidth;
-			c.gridheight = gridheight;
-			c.fill = GridBagConstraints.BOTH;
-			c.insets = new Insets(2,2,2,2);
-			c.gridx = gridx;
-			c.gridy = gridy;
-			this.add(component, c);
-		}
-	}
-	
 	private class ItemsTablePanel extends JPanel
 	{
 		private final JTable _table = new JTable();
@@ -383,6 +183,23 @@ public class MainWindowImp extends JFrame implements IMainWindow
 			{
 				return this._removeBtn.getPreferredSize();
 			}
+		}
+	}
+	
+	private class SouthPanel extends JPanel
+	{
+		private final TotalsPanel _totalsPanel = new TotalsPanel();
+		private final NotesAndButtonsPanel _notesAndButtonsPanel;
+		
+		public SouthPanel(Dimension btnDim)
+		{
+			this.setLayout(new BorderLayout());
+			
+			this._notesAndButtonsPanel = new NotesAndButtonsPanel(btnDim);
+
+			this.add(this._notesAndButtonsPanel, BorderLayout.CENTER);
+			this._totalsPanel.setPreferredSize(new Dimension(225,this._totalsPanel.getHeight()));
+			this.add(this._totalsPanel, BorderLayout.EAST);
 		}
 	}
 	

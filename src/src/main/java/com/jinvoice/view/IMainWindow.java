@@ -19,8 +19,8 @@ public interface IMainWindow
 	public String getShipTo();
 	public void setShipTo(String shipTo);
 	
-	public String getTitle();
-	public void setTitle(String title);
+	public String getInvoiceTitle();
+	public void setInvoiceTitle(String title);
 	
 	public int getNumber();
 	public void setNumber(int number);
@@ -37,7 +37,7 @@ public interface IMainWindow
 	public ArrayList<InvoiceItem> getItems();
 	public ArrayList<InvoiceItem> getSelectedItems();
 	public void addItem(InvoiceItem item);
-	public boolean removeItem(InvoiceItem item);
+	public void removeItem(InvoiceItem item);
 	
 	public boolean getAddItemButtonEnabled();
 	public void setAddItemButtonEnabled(boolean enabled);
@@ -59,7 +59,7 @@ public interface IMainWindow
 	public int getDiscountPercent();
 	public void setDiscountPercent(int percent);
 	
-	public double getShipping();
+	public String getEnteredShipping();
 	public void setShipping(double shipping);
 	
 	public double getTotal();

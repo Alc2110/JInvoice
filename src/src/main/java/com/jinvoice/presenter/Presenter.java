@@ -40,7 +40,6 @@ public class Presenter implements IViewListener
 
 	public void onRemoveSelectedItemButtonClicked()
 	{
-		// TODO
 		ArrayList<InvoiceItem> selectedItems = this._view.getSelectedItems();
 		for (final InvoiceItem item : selectedItems)
 		{
@@ -65,7 +64,7 @@ public class Presenter implements IViewListener
 		this._view.setFromText("");
 		this._view.setBillTo("");
 		this._view.setShipTo("");
-		this._view.setTitle("");
+		this._view.setInvoiceTitle("");
 		this._view.setPaymentTerms("");
 		this._view.setNotes("");
 	}
@@ -73,11 +72,11 @@ public class Presenter implements IViewListener
 	public void onInputFieldUpdated()
 	{
 		boolean inputsComplete = true;
+		
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getFromText());
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getBillTo());
-		inputsComplete = inputsComplete && !isEmptyString(this._view.getShipTo());
 		
-		inputsComplete = inputsComplete && !isEmptyString(this._view.getTitle());
+		inputsComplete = inputsComplete && !isEmptyString(this._view.getInvoiceTitle());
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getPaymentTerms());
 		if (!(this._view.getDate() == null) && !(this._view.getDueDate() == null))
 		{
@@ -85,10 +84,20 @@ public class Presenter implements IViewListener
 		}
 		else
 		{
-			inputsComplete = false;
+			inputsComplete = inputsComplete && false;
 		}
 			
 		inputsComplete = inputsComplete && (this._view.getItems().size() > 0);
+		
+		try
+		{
+			double shipping =  Double.parseDouble(this._view.getEnteredShipping());
+			inputsComplete = inputsComplete && true;
+		}
+		catch (NumberFormatException ex)
+		{
+			inputsComplete = inputsComplete && false;
+		}
 		
 		this._view.setCreateButtonEnabled(inputsComplete);
 		this._view.setCancelButtonEnabled(inputsComplete);
@@ -99,7 +108,7 @@ public class Presenter implements IViewListener
 		if (text == null)
 			return true;
 		
-		if (text.trim().isEmpty())
+		if (text.trim().isEmpty() || text.equals(""))
 		{
 			return true;
 		}

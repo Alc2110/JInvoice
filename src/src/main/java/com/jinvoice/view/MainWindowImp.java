@@ -651,6 +651,18 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		this._northPanel._toPanel._shipToField.setText(shipTo);
 	}
+	
+	@Override
+	public void setInvoiceTitle(String title)
+	{
+		this._northPanel._detailsPanel._titleField.setText(title);
+	}
+	
+	@Override
+	public String getInvoiceTitle()
+	{
+		return this._northPanel._detailsPanel._titleField.getText();
+	}
 
 	@Override
 	public int getNumber()
@@ -761,12 +773,17 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		// item does not yet exist, just add it
 		DefaultTableModel tableModel = (DefaultTableModel)this._itemsTablePanel._table.getModel();
 		tableModel.addRow(new Object[] {item.getDescription(), item.getPrice(), 1, item.getPrice()});
+		
+		// fire update event
+		for (final IViewListener listener : this._listeners)
+		{
+			listener.onInputFieldUpdated();
+		}
 	}
 
 	@Override
-	public boolean removeItem(InvoiceItem item)
+	public void removeItem(InvoiceItem item)
 	{
-		// TODO Auto-generated method stub
 		int rows = this._itemsTablePanel._table.getRowCount();
 		for (int row = 0; row < rows; row++)
 		{
@@ -783,7 +800,12 @@ public class MainWindowImp extends JFrame implements IMainWindow
 				model.removeRow(row);
 			}
 		}
-		return false;
+		
+		// fire update event
+		for (final IViewListener listener : this._listeners)
+		{
+			listener.onInputFieldUpdated();
+		}
 	}
 
 	@Override
@@ -808,6 +830,15 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		int dialogResult = JOptionPane.showConfirmDialog(this, inputs, "Add Item", JOptionPane.PLAIN_MESSAGE);
 		if (dialogResult == JOptionPane.OK_OPTION)
 		{
+			String description = descriptionField.getText();
+			if (description == null ||
+				description.trim().isEmpty())
+			{
+				JOptionPane.showMessageDialog(this, "Please enter a description.", "Error", JOptionPane.ERROR_MESSAGE);
+				
+				return null;
+			}
+
 			double price;
 			try
 			{
@@ -925,17 +956,9 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	}
 
 	@Override
-	public double getShipping()
+	public String getEnteredShipping()
 	{
-		try
-		{
-			return Double.parseDouble(this._southPanel._totalsPanel._shippingField.getText());
-		}
-		catch (Exception e)
-		{
-			this.setShipping(0);
-			return 0;
-		}
+		return this._southPanel._totalsPanel._shippingField.getText();
 	}
 
 	@Override

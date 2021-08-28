@@ -1,13 +1,12 @@
 package com.jinvoice.view;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
-
-import org.jdatepicker.JDatePicker;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Properties;
+import java.text.DecimalFormat;
 import org.jdatepicker.impl.DateComponentFormatter;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -15,13 +14,6 @@ import org.jdatepicker.impl.UtilDateModel;
 
 import com.jinvoice.models.InvoiceItem;
 import com.jinvoice.presenter.*;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Properties;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 
 /*
  * Application main window.
@@ -120,81 +112,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		
 		this.setVisible(true);
 	}//ctor
-	
-	private class InputFieldListener implements DocumentListener
-	{
-		private ArrayList<IViewListener> _listeners;
-		
-		public InputFieldListener(ArrayList<IViewListener> listeners)
-		{
-			this._listeners = listeners;
-		}
-		
-		@Override
-		public void changedUpdate(DocumentEvent arg0)
-		{
-			notifyListeners();	
-		}
 
-		@Override
-		public void insertUpdate(DocumentEvent arg0)
-		{
-			notifyListeners();
-		}
-
-		@Override
-		public void removeUpdate(DocumentEvent arg0)
-		{
-			notifyListeners();
-		}
-		
-		private void notifyListeners()
-		{
-			for (final IViewListener listener : this._listeners)
-			{
-				listener.onInputFieldUpdated();
-			}
-		}
-	}
-	
-	private class SpinnerListener implements ChangeListener
-	{
-		private ArrayList<IViewListener> _listeners;
-		
-		public SpinnerListener(ArrayList<IViewListener> listeners)
-		{
-			this._listeners = listeners;
-		}
-
-		@Override
-		public void stateChanged(ChangeEvent arg0)
-		{
-			for (final IViewListener listener : this._listeners)
-			{
-				listener.onInputFieldUpdated();
-			}
-		}
-	}
-	
-	private class DateChangeListener implements ChangeListener
-	{
-		private ArrayList<IViewListener> _listeners;
-		
-		public DateChangeListener(ArrayList<IViewListener> listeners)
-		{
-			this._listeners = listeners;
-		}
-		
-		@Override
-		public void stateChanged(ChangeEvent arg0)
-		{
-			for (final IViewListener listener : this._listeners)
-			{
-				listener.onInputFieldUpdated();
-			}
-		}
-	}
-	
 	public void addViewListener(IViewListener listener)
 	{
 		this._listeners.add(listener);

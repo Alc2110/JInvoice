@@ -667,7 +667,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public int getNumber()
 	{
-		return (int)this._northPanel._detailsPanel._numberField.getModel().getValue();
+		return commitSpinnerValue(this._northPanel._detailsPanel._numberField);
 	}
 
 	@Override
@@ -912,18 +912,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public int getTaxPercent()
 	{
-		// commit the value
-		// ensures manually-typed values are reflected in the model
-		try
-		{
-			this._southPanel._totalsPanel._taxField.commitEdit();
-		}
-		catch (java.text.ParseException e)
-		{
-			return 0;
-		}
-		
-		return (Integer)this._southPanel._totalsPanel._taxField.getValue();
+		return commitSpinnerValue(this._southPanel._totalsPanel._taxField);
 	}
 
 	@Override
@@ -935,18 +924,23 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public int getDiscountPercent()
 	{
+		return commitSpinnerValue(this._southPanel._totalsPanel._discountField);
+	}
+	
+	private int commitSpinnerValue(JSpinner spinner)
+	{
 		// commit the value
 		// ensures manually-typed values are reflected in the model
 		try
 		{
-			this._southPanel._totalsPanel._discountField.commitEdit();
+			spinner.commitEdit();
 		}
 		catch (java.text.ParseException e)
 		{
 			return 0;
 		}
-
-		return (Integer)this._southPanel._totalsPanel._discountField.getValue();
+		
+		return (Integer)spinner.getValue();
 	}
 
 	@Override

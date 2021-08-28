@@ -55,6 +55,7 @@ class DetailsPanel extends JPanel
 				0, 0);
 
 		SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel();
+		this._numberField.setModel(numberSpinnerModel);
 		addComponent(this._numberField, 
 				1, 2,
 				1, 1,

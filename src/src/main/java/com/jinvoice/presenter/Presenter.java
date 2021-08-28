@@ -1,9 +1,6 @@
 package com.jinvoice.presenter;
 
-import java.awt.Component;
 import java.util.ArrayList;
-
-import javax.swing.JOptionPane;
 
 import com.jinvoice.models.InvoiceItem;
 import com.jinvoice.view.*;

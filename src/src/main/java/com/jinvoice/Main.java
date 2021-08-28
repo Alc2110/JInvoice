@@ -4,7 +4,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.jinvoice.models.*;
 import com.jinvoice.view.*;
 import com.jinvoice.presenter.*;
 

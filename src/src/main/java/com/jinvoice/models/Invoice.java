@@ -24,6 +24,17 @@ public class Invoice
 		
 	}
 	
+	public double getTotal()
+	{
+		double total = 0;
+		for (final InvoiceItem item : this._items)
+		{
+			total += item.getPrice();
+		}
+		
+		return total;
+	}
+	
 	public boolean containsItem(InvoiceItem item)
 	{
 		return this._items.contains(item);

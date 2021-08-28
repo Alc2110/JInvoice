@@ -71,11 +71,12 @@ public class Presenter implements IViewListener
 	
 	public void onInputFieldUpdated()
 	{
+		// validate inputs
 		boolean inputsComplete = true;
-		
+		// from and to
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getFromText());
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getBillTo());
-		
+		// invoice details
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getInvoiceTitle());
 		inputsComplete = inputsComplete && !isEmptyString(this._view.getPaymentTerms());
 		if (!(this._view.getDate() == null) && !(this._view.getDueDate() == null))
@@ -86,12 +87,13 @@ public class Presenter implements IViewListener
 		{
 			inputsComplete = inputsComplete && false;
 		}
-			
+		// invoice items	
 		inputsComplete = inputsComplete && (this._view.getItems().size() > 0);
-		
+		// shipping
+		double shipping = 0;
 		try
 		{
-			double shipping =  Double.parseDouble(this._view.getEnteredShipping());
+			shipping =  Double.parseDouble(this._view.getEnteredShipping());
 			inputsComplete = inputsComplete && true;
 		}
 		catch (NumberFormatException ex)
@@ -99,9 +101,34 @@ public class Presenter implements IViewListener
 			inputsComplete = inputsComplete && false;
 		}
 		
+		// set buttons' enabled statuses
 		this._view.setCreateButtonEnabled(inputsComplete);
 		this._view.setCancelButtonEnabled(inputsComplete);
+		
+		// show totals
+		if (this._view.getItems().size() > 0)
+		{
+			double subtotal = 0;
+			double total = 0;
+			for (final InvoiceItem item : this._view.getItems())
+			{
+				subtotal += item.getPrice();
+				total += item.getPrice();
+			}
+			this._view.setSubtotal(subtotal);
+			this._view.setTotal(total + shipping + getPercent(total, this._view.getTaxPercent()) - getPercent(total, this._view.getDiscountPercent()));
+		}
+		else
+		{
+			this._view.setSubtotal(0);
+			this._view.setTotal(0);
+		}
 	}//onInputFieldUpdated
+	
+	private double getPercent(double value, int percent)
+	{
+		return (percent/(double)100)*value;
+	}
 	
 	private boolean isEmptyString(String text)
 	{

@@ -20,6 +20,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 /*
@@ -110,8 +111,8 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		this._northPanel._detailsPanel._dueDatePicker.getModel().addChangeListener(new DateChangeListener(this._listeners));
 		this._southPanel._notesAndButtonsPanel._notesField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
 		this._southPanel._totalsPanel._shippingField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
-		this._southPanel._totalsPanel._subtotalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
-		this._southPanel._totalsPanel._totalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		//this._southPanel._totalsPanel._subtotalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
+		//this._southPanel._totalsPanel._totalField.getDocument().addDocumentListener(new InputFieldListener(this._listeners));
 		this._southPanel._totalsPanel._taxField.addChangeListener(new SpinnerListener(this._listeners));
 		this._southPanel._totalsPanel._discountField.addChangeListener(new SpinnerListener(this._listeners));
 		
@@ -766,6 +767,11 @@ public class MainWindowImp extends JFrame implements IMainWindow
 				int currQuantity = (int)this._itemsTablePanel._table.getModel().getValueAt(row, 2);
 				this._itemsTablePanel._table.getModel().setValueAt(currQuantity+1, row, 2);
 				this._itemsTablePanel._table.getModel().setValueAt(item.getPrice()*(currQuantity+1), row, 3);
+				// fire update event
+				for (final IViewListener listener : this._listeners)
+				{
+					listener.onInputFieldUpdated();
+				}
 				// nothing more to do
 				return;
 			}
@@ -898,6 +904,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		}
 		catch (Exception e)
 		{
+			// this shouldn't happen
 			setSubtotal(0);
 			return 0;
 		}
@@ -906,7 +913,13 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public void setSubtotal(double subtotal)
 	{
-		this._southPanel._totalsPanel._subtotalField.setText(String.valueOf(subtotal));
+		// update the UI on the EDT
+		Runnable doUpdate = () -> {
+			DecimalFormat decFormat = new DecimalFormat("#.00");
+			String formattedSubtotal = decFormat.format(subtotal);
+			this._southPanel._totalsPanel._subtotalField.setText(formattedSubtotal);
+		};
+		SwingUtilities.invokeLater(doUpdate);
 	}
 
 	@Override
@@ -978,7 +991,13 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public void setTotal(double total)
 	{
-		this._southPanel._totalsPanel._totalField.setText(String.valueOf(total));
+		// update the UI on the EDT
+		Runnable doUpdate = () -> {
+			DecimalFormat decFormat = new DecimalFormat("#.00");
+			String formattedTotal = decFormat.format(total);
+			this._southPanel._totalsPanel._totalField.setText(formattedTotal);
+		};
+		SwingUtilities.invokeLater(doUpdate);
 	}
 
 	@Override

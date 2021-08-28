@@ -24,6 +24,8 @@ public class Presenter implements IViewListener
 		this._view.setCreateButtonEnabled(false);
 		this._view.setCancelButtonEnabled(false);
 		this._view.setRemoveSelectedItemButtonEnabled(false);
+		
+		this._view.setShipping(0);
 	}
 	
 	public void onAddItemButtonClicked()

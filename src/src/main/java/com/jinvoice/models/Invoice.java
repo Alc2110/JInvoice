@@ -93,7 +93,7 @@ public class Invoice
 		this._billTo = billTo;
 	}
 
-	public String getTitle() 
+	public String getTitle()
 	{
 		return _title;
 	}

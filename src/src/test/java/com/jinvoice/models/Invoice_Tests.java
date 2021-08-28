@@ -1,5 +1,6 @@
 package com.jinvoice.models;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,24 @@ class Invoice_Tests {
 		fail("Not yet implemented");
 	}
 	*/
+	
+	@Test
+	void getTotal() {
+		// arrange
+		Invoice invoice = new Invoice();
+		InvoiceItem item1 = new InvoiceItem("item1", 1.00);
+		InvoiceItem item2 = new InvoiceItem("item2", 0.50);
+		invoice.addItem(item1);
+		invoice.addItem(item2);
+		invoice.addItem(item2);
+		double expectedTotal = 2;
+		
+		// act
+		double actualTotal = invoice.getTotal();
+		
+		// assert
+		assertTrue(actualTotal==expectedTotal);
+	}
 
 	@Test
 	void testRemoveItem_exists() {

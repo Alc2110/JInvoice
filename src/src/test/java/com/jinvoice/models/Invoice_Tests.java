@@ -2,7 +2,7 @@ package com.jinvoice.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.*;
-
+import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 
 class Invoice_Tests {
@@ -25,7 +25,7 @@ class Invoice_Tests {
 	*/
 	
 	@Test
-	void getTotal() {
+	void getSubtotal() {
 		// arrange
 		Invoice invoice = new Invoice();
 		InvoiceItem item1 = new InvoiceItem("item1", 1.00);
@@ -36,10 +36,31 @@ class Invoice_Tests {
 		double expectedTotal = 2;
 		
 		// act
-		double actualTotal = invoice.getTotal();
+		double actualTotal = invoice.getSubtotal();
 		
 		// assert
 		assertTrue(actualTotal==expectedTotal);
+	}
+	
+	@Test
+	void getTotal() {
+		// arrange
+		Invoice invoice = new Invoice();
+		InvoiceItem item1 = new InvoiceItem("item1", 1.00);
+		InvoiceItem item2 = new InvoiceItem("item2", 0.50);
+		invoice.setDiscountPercentage(1);
+		invoice.setTaxPercentage(2);
+		invoice.setShipping(1);
+		invoice.addItem(item1);
+		invoice.addItem(item2);
+		invoice.addItem(item2);
+		double expectedTotal = 3.02;
+
+		// act
+		double actualTotal = invoice.getTotal();
+
+		// assert
+		assertEquals(expectedTotal, actualTotal, 0);
 	}
 
 	@Test
@@ -66,6 +87,24 @@ class Invoice_Tests {
 		
 		// assert
 		assertFalse(removed);
+	}
+	
+	@Test
+	void getItemsWithCounts() {
+		// arrange
+		InvoiceItem item1 = new InvoiceItem("item1", 1);
+		InvoiceItem item2 = new InvoiceItem("item2", 0.50);
+		Invoice invoice = new Invoice();
+		invoice.addItem(item1);
+		invoice.addItem(item2);
+		invoice.addItem(item2);
+		
+		// act
+		HashMap<InvoiceItem, Integer> freqMap = invoice.getItemsWithCounts();
+		
+		// assert
+		assertTrue(freqMap.get(item1)==1);
+		assertTrue(freqMap.get(item2)==2);
 	}
 	
 	/*

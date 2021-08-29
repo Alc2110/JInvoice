@@ -2,6 +2,10 @@ package com.jinvoice.presenter;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
+import com.jinvoice.models.Invoice;
+import com.jinvoice.models.InvoiceBuilder;
 import com.jinvoice.models.InvoiceItem;
 import com.jinvoice.view.*;
 
@@ -11,11 +15,13 @@ import com.jinvoice.view.*;
 public class Presenter implements IViewListener
 {
 	private final IMainWindow _view;
+	private final Invoice _model;
 
 	public Presenter(IMainWindow view)
 	{
 		this._view = view;
 		this._view.addViewListener(this);
+		this._model = new Invoice();
 		
 		// disable some components initially
 		this._view.setCreateButtonEnabled(false);
@@ -54,7 +60,23 @@ public class Presenter implements IViewListener
 	public void onCreateButtonClicked()
 	{
 		// TODO
-
+		ArrayList<InvoiceItem> items = this._view.getItems();
+		InvoiceBuilder ib = new InvoiceBuilder(this._model);
+		Invoice invoice = ib
+				.from(this._view.getFromText())
+				.to(this._view.getBillTo(), this._view.getShipTo())
+				.withDetails(this._view.getInvoiceTitle(), this._view.getNumber(), this._view.getDate(), this._view.getDueDate(), this._view.getPaymentTerms())
+				.withNotes(this._view.getNotes())
+			.build();
+		ExcelInvoiceWriter invoiceWriter = new ExcelInvoiceWriter(invoice, "D:\\invoice_test.xlsx");
+		try
+		{
+			invoiceWriter.write();
+		}
+		catch (Exception ex)
+		{
+			System.out.println("Error exporting invoice: " + ex.getMessage());
+		}
 	}
 	
 	public void onCancelButtonClicked()
@@ -92,7 +114,7 @@ public class Presenter implements IViewListener
 		double shipping = 0;
 		try
 		{
-			shipping =  Double.parseDouble(this._view.getEnteredShipping());
+			shipping = Double.parseDouble(this._view.getEnteredShipping());
 			inputsComplete = inputsComplete && true;
 		}
 		catch (NumberFormatException ex)
@@ -107,15 +129,12 @@ public class Presenter implements IViewListener
 		// show totals
 		if (this._view.getItems().size() > 0)
 		{
-			double subtotal = 0;
-			double total = 0;
-			for (final InvoiceItem item : this._view.getItems())
-			{
-				subtotal += item.getPrice();
-				total += item.getPrice();
-			}
-			this._view.setSubtotal(subtotal);
-			this._view.setTotal(total + shipping + getPercent(total, this._view.getTaxPercent()) - getPercent(total, this._view.getDiscountPercent()));
+			this._model.setItems(this._view.getItems());
+			this._model.setDiscountPercentage(this._view.getDiscountPercent());
+			this._model.setTaxPercentage(this._view.getTaxPercent());
+			this._model.setShipping(shipping);
+			this._view.setSubtotal(this._model.getSubtotal());
+			this._view.setTotal(this._model.getTotal());
 		}
 		else
 		{
@@ -123,12 +142,7 @@ public class Presenter implements IViewListener
 			this._view.setTotal(0);
 		}
 	}//onInputFieldUpdated
-	
-	private double getPercent(double value, int percent)
-	{
-		return (percent/(double)100)*value;
-	}
-	
+
 	private boolean isEmptyString(String text)
 	{
 		if (text == null)
@@ -142,5 +156,5 @@ public class Presenter implements IViewListener
 		{
 			return false;
 		}
-	}
+	}//isEmptyString
 }//class

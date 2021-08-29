@@ -2,7 +2,11 @@ package com.jinvoice.models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
+/*
+ * Represents a single invoice, with all items and metadata.
+ */
 public class Invoice
 {
 	private String _from;
@@ -14,17 +18,40 @@ public class Invoice
 	private String _paymentTerms;
 	private Date _dueDate;
 	private String _notes;
-	private double _tax;
-	private double _discount;
 	private double _shipping;
 	private ArrayList<InvoiceItem> _items = new ArrayList<InvoiceItem>();
+	private int _taxPercentage;
+	private int _discountPercentage;
 	
+	/*
+	 * Default constructor.
+	 */
 	public Invoice()
 	{
 		
 	}
 	
-	public double getTotal()
+	public int getTaxPercentage()
+	{
+		return this._taxPercentage;
+	}
+	
+	public void setTaxPercentage(int percentage)
+	{
+		this._taxPercentage = percentage;
+	}
+	
+	public void setDiscountPercentage(int percentage)
+	{
+		this._discountPercentage = percentage;
+	}
+	
+	public int getDiscountPercentage()
+	{
+		return this._discountPercentage;
+	}
+
+	public double getSubtotal()
 	{
 		double total = 0;
 		for (final InvoiceItem item : this._items)
@@ -35,6 +62,11 @@ public class Invoice
 		return total;
 	}
 	
+	public double getTotal()
+	{
+		return getSubtotal() + this.getShipping() + this.getTax() - this.getDiscount();
+	}
+	
 	public boolean containsItem(InvoiceItem item)
 	{
 		return this._items.contains(item);
@@ -43,6 +75,32 @@ public class Invoice
 	public ArrayList<InvoiceItem> getItems()
 	{
 		return this._items;
+	}
+	
+	public void setItems(ArrayList<InvoiceItem> items)
+	{
+		this._items = items;
+	}
+	
+	/*
+	 * Generates a frequency map of the items.
+	 */
+	public HashMap<InvoiceItem, Integer> getItemsWithCounts()
+	{
+		HashMap<InvoiceItem, Integer> itemCounts = new HashMap<InvoiceItem, Integer>();
+		for (final InvoiceItem item : this.getItems())
+		{
+			if (itemCounts.containsKey(item))
+			{
+				itemCounts.put(item, itemCounts.get(item)+1);
+			}
+			else
+			{
+				itemCounts.put(item, 1);
+			}
+		}
+		
+		return itemCounts;
 	}
 	
 	public void addItem(InvoiceItem item)
@@ -155,22 +213,12 @@ public class Invoice
 
 	public double getTax() 
 	{
-		return _tax;
-	}
-
-	public void setTax(double tax) 
-	{
-		this._tax = tax;
+		return getPercent(getSubtotal(), this._taxPercentage);
 	}
 
 	public double getDiscount() 
 	{
-		return _discount;
-	}
-
-	public void setDiscount(double discount) 
-	{
-		this._discount = discount;
+		return getPercent(getSubtotal(), this._discountPercentage);
 	}
 
 	public double getShipping() 
@@ -182,4 +230,12 @@ public class Invoice
 	{
 		this._shipping = _shipping;
 	}//setShipping
+	
+	/*
+	 * Calculates the value of a percentage of a given value.
+	 */
+	private double getPercent(double value, int percent)
+	{
+		return (percent/(double)100)*value;
+	}//getPercent
 }//class

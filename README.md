@@ -1,6 +1,6 @@
 # JInvoice
 ## Description and Requirements
-Simple invoice generator built with Java Swing.
+Simple invoice generator built with Java Swing. Invoices exported as Microsoft Excel spreadsheets.
 
 ## Contents
 ```
@@ -10,7 +10,7 @@ root
 |     |
 |     +--design // requirements and design of the application
 |     |
-|     +--user // documentation intended for users
+|     +--user // documentation intended for users (TODO)
 |
 +--src // Maven Eclipse project
 |
@@ -19,16 +19,17 @@ root
 ```
 
 ## Installation and Setup
-TODO
+Simply clone the repo and open the project with Eclipse IDE.
 
 ## Usage
 TODO
 
 ## Attributions
-TODO
+Apache POI by Apache Software Foundation
+JDatePicker by Juan Heyns
 
 ## Contributing
-TODO
+Pull requests are welcome.
 
 ## License
 MIT

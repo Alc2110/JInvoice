@@ -41,13 +41,12 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 	private final int ITEM_TOTAL_COL = 3;
 	*/
 	
-	// https://stackoverflow.com/questions/37011921/setting-rgb-colors-with-xssfcolor
 	// TODO: tweak colours
 	private final short HEADER_AND_META_STYLE_COLOUR_INDEX = IndexedColors.BLUE.getIndex();
 	private final short ODD_ROW_COLOUR_INDEX = IndexedColors.LIGHT_BLUE.getIndex();
 	private final short EVEN_ROW_COLOUR_INDEX = IndexedColors.SKY_BLUE.getIndex();
 	
-	private final String CURRENCY_FORMAT = "_($* #,##0.00_);_($* (#,##0.00);_($* \\\\\\\"-\\\\\\\"??_);_(@_)";
+	private final String CURRENCY_FORMAT = "$#,##0.00_);($#,##0.00)";
 	private final String DATE_FORMAT = "dd/mm/yyyy";
 	
 	/*
@@ -88,6 +87,9 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 		CellStyle evenRowStyleWithCurrency = wb.createCellStyle();
 		evenRowStyleWithCurrency.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		evenRowStyleWithCurrency.setFillForegroundColor(EVEN_ROW_COLOUR_INDEX);
+		evenRowStyleWithCurrency.setDataFormat(
+				createHelper.createDataFormat().getFormat(CURRENCY_FORMAT)
+				);
 		// odd row
 		CellStyle oddRowStyle = wb.createCellStyle();
 		oddRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -96,6 +98,9 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 		CellStyle oddRowStyleWithCurrency = wb.createCellStyle();
 		oddRowStyleWithCurrency.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 		oddRowStyleWithCurrency.setFillForegroundColor(ODD_ROW_COLOUR_INDEX);
+		oddRowStyleWithCurrency.setDataFormat(
+				createHelper.createDataFormat().getFormat(CURRENCY_FORMAT)
+				);
 		// headers with currency
 		CellStyle headerAndMetaStyleWithCurrency = wb.createCellStyle();
 		headerAndMetaStyleWithCurrency.setDataFormat(
@@ -221,7 +226,7 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 		row = ws.createRow(currRow);
 		cell = row.createCell(2);
 		cell.setCellValue("Shipping: ");
-		cell.setCellStyle(headerAndMetaStyle);
+		cell.setCellStyle(headerAndMetaStyleWithCurrency);
 		cell = row.createCell(3);
 		cell.setCellValue(this._invoice.getShipping());
 		cell.setCellStyle(headerAndMetaStyleWithCurrency);

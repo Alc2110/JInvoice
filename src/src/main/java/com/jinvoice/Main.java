@@ -78,9 +78,9 @@ public class Main
 		public static final String APP_VERSION = "0.9.0";
 		public static final String[] ATTRIBUTIONS = new String[]
 				{
-						"Apache POI by Apache Software Foundation",
+						"Apache POI 5.0.0 by Apache Software Foundation",
 						//"Apache PDFBox by Apache Software Foundation",
-						"JDatePicker by Juan Heyns"
+						"JDatePicker 1.3.4 by Juan Heyns"
 				};
 	}
 }

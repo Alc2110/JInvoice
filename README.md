@@ -25,8 +25,8 @@ Simply clone the repo and open the project with Eclipse IDE.
 TODO
 
 ## Attributions
-Apache POI by Apache Software Foundation
-JDatePicker by Juan Heyns
+Apache POI 5.0.0 by Apache Software Foundation
+JDatePicker 1.3.4 by Juan Heyns
 
 ## Contributing
 Pull requests are welcome.

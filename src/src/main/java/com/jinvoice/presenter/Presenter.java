@@ -2,11 +2,10 @@ package com.jinvoice.presenter;
 
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import com.jinvoice.models.Invoice;
 import com.jinvoice.models.InvoiceBuilder;
 import com.jinvoice.models.InvoiceItem;
+import com.jinvoice.models.WriteInvoiceTask;
 import com.jinvoice.view.*;
 
 /*
@@ -59,7 +58,6 @@ public class Presenter implements IViewListener
 	
 	public void onCreateButtonClicked()
 	{
-		// TODO
 		InvoiceBuilder ib = new InvoiceBuilder(this._model);
 		Invoice invoice = ib
 				.from(this._view.getFromText())
@@ -67,15 +65,17 @@ public class Presenter implements IViewListener
 				.withDetails(this._view.getInvoiceTitle(), this._view.getNumber(), this._view.getDate(), this._view.getDueDate(), this._view.getPaymentTerms())
 				.withNotes(this._view.getNotes())
 			.build();
-		ExcelInvoiceWriter invoiceWriter = new ExcelInvoiceWriter(invoice, "D:\\invoice_test.xlsx");
-		try
+		String filePath = this._view.showSaveFileDialog();
+		if (filePath == null)
 		{
-			invoiceWriter.write();
-		}
-		catch (Exception ex)
-		{
-			System.out.println("Error exporting invoice: " + ex.getMessage());
-		}
+			return;
+		} 
+		this._view.setCreateButtonEnabled(false);
+		this._view.setCancelButtonEnabled(false);
+		// execute the operation on a background thread
+		ExcelInvoiceWriter invoiceWriter = new ExcelInvoiceWriter(invoice, filePath);
+		WriteInvoiceTask task = new WriteInvoiceTask(invoiceWriter, this._view);
+		task.execute();
 	}
 	
 	public void onCancelButtonClicked()
@@ -141,7 +141,7 @@ public class Presenter implements IViewListener
 			this._view.setTotal(0);
 		}
 	}//onInputFieldUpdated
-
+	
 	private boolean isEmptyString(String text)
 	{
 		if (text == null)

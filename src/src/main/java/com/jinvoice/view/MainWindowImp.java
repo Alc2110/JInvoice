@@ -1,8 +1,14 @@
 package com.jinvoice.view;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.commons.io.FilenameUtils;
+
 import java.awt.*;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.DecimalFormat;
@@ -530,5 +536,46 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	public void setCancelButtonEnabled(boolean enabled)
 	{
 		this._southPanel._notesAndButtonsPanel._buttonsPanel._cancelButton.setEnabled(enabled);
+	}
+	
+	@Override
+	public String showSaveFileDialog()
+	{
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save invoice file");
+		FileNameExtensionFilter fileFilter = new FileNameExtensionFilter("Excel spreadsheet", "xlsx");
+		fileChooser.setFileFilter(fileFilter);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		
+		int userSelection = fileChooser.showSaveDialog(this);
+		if (userSelection == JFileChooser.APPROVE_OPTION)
+		{
+			File file = fileChooser.getSelectedFile();
+			if (FilenameUtils.getExtension(file.getName()).equalsIgnoreCase("xlsx"))
+			{
+				// user has already provided extension
+				return file.getAbsolutePath();
+			}
+			else
+			{
+				return file.getAbsolutePath() + ".xlsx";
+			}
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+	@Override
+	public void showInfoDialog(String title, String message)
+	{
+		JOptionPane.showMessageDialog(this, message, title, JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	@Override
+	public void showErrorDialog(String title, String message)
+	{
+		JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
 	}
 }//class

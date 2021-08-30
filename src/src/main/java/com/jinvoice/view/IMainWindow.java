@@ -70,4 +70,9 @@ public interface IMainWindow
 	
 	public boolean getCancelButtonEnabled();
 	public void setCancelButtonEnabled(boolean enabled);
+	
+	public String showSaveFileDialog();
+	
+	public void showInfoDialog(String title, String message);
+	public void showErrorDialog(String title, String message);
 }

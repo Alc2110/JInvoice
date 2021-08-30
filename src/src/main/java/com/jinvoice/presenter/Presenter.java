@@ -60,7 +60,6 @@ public class Presenter implements IViewListener
 	public void onCreateButtonClicked()
 	{
 		// TODO
-		ArrayList<InvoiceItem> items = this._view.getItems();
 		InvoiceBuilder ib = new InvoiceBuilder(this._model);
 		Invoice invoice = ib
 				.from(this._view.getFromText())

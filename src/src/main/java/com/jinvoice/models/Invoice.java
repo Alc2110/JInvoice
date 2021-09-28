@@ -3,6 +3,7 @@ package com.jinvoice.models;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import static com.jinvoice.Main.Utils.*;
 
 /*
  * Represents a single invoice, with all items and metadata.
@@ -236,6 +237,6 @@ public class Invoice
 	 */
 	private double getPercent(double value, int percent)
 	{
-		return (percent/(double)100)*value;
+		return roundAmount((percent/(double)100)*value);
 	}//getPercent
 }//class

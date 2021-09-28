@@ -7,6 +7,7 @@ import com.jinvoice.models.InvoiceBuilder;
 import com.jinvoice.models.InvoiceItem;
 import com.jinvoice.models.WriteInvoiceTask;
 import com.jinvoice.view.*;
+import static com.jinvoice.Main.Utils.*;
 
 /*
  * Contains most of the logic that interacts with the UI and models.
@@ -113,7 +114,7 @@ public class Presenter implements IViewListener
 		double shipping = 0;
 		try
 		{
-			shipping = Double.parseDouble(this._view.getEnteredShipping());
+			shipping = roundAmount(Double.parseDouble(this._view.getEnteredShipping()));
 			inputsComplete = inputsComplete && true;
 		}
 		catch (NumberFormatException ex)

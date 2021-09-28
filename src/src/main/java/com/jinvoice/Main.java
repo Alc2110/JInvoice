@@ -1,5 +1,6 @@
 package com.jinvoice;
 
+import java.math.RoundingMode;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
@@ -82,5 +83,15 @@ public class Main
 						//"Apache PDFBox by Apache Software Foundation",
 						"JDatePicker 1.3.4 by Juan Heyns"
 				};
+	}
+	
+	public static class Utils {
+		public static double roundAmount(double amt)
+		{
+			java.math.BigDecimal bd = java.math.BigDecimal.valueOf(amt);
+			bd = bd.setScale(2, RoundingMode.HALF_UP);
+			
+			return bd.doubleValue();
+		}
 	}
 }

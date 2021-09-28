@@ -9,12 +9,14 @@ import org.apache.commons.io.FilenameUtils;
 import java.awt.*;
 import java.io.File;
 import java.io.FileFilter;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.DecimalFormat;
 
 import com.jinvoice.models.InvoiceItem;
 import com.jinvoice.presenter.*;
+import static com.jinvoice.Main.Utils.*;
 
 /*
  * Application main window.
@@ -36,6 +38,8 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	private final SouthPanel _southPanel = new SouthPanel(this._itemsTablePanel.getButtonSize());
 	
 	private final ArrayList<IViewListener> _listeners = new ArrayList<IViewListener>();
+	
+	private final DecimalFormat DEC_FORMAT = new DecimalFormat("#.00");
 	
 	/*
 	 * Constructor.
@@ -238,7 +242,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 			{
 				items.add(new InvoiceItem(
 						(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
-						(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+						roundAmount(Double.parseDouble((String)this._itemsTablePanel._table.getModel().getValueAt(row, 1)))
 						));
 			}
 		}
@@ -255,7 +259,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		{
 			selectedItems.add(new InvoiceItem(
 					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
-					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
+					roundAmount(Double.parseDouble((String)this._itemsTablePanel._table.getModel().getValueAt(row, 1)))
 					));
 		}
 		
@@ -265,14 +269,13 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public void addItem(InvoiceItem item)
 	{
-		ArrayList<InvoiceItem> items = new ArrayList<InvoiceItem>();
 		int rows = this._itemsTablePanel._table.getRowCount();
 		for (int row = 0; row < rows; row++)
 		{
 			InvoiceItem currentItem = new InvoiceItem(
 					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
-					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
-					);
+					roundAmount(Double.parseDouble((String)this._itemsTablePanel._table.getModel().getValueAt(row, 1))
+					));
 			// TODO: figure out why equals() does not work
 			if (currentItem.getDescription().equals(item.getDescription()) && 
 				currentItem.getPrice() == item.getPrice())
@@ -280,7 +283,8 @@ public class MainWindowImp extends JFrame implements IMainWindow
 				// item already exists, increment the count
 				int currQuantity = (int)this._itemsTablePanel._table.getModel().getValueAt(row, 2);
 				this._itemsTablePanel._table.getModel().setValueAt(currQuantity+1, row, 2);
-				this._itemsTablePanel._table.getModel().setValueAt(item.getPrice()*(currQuantity+1), row, 3);
+				String formattedAmt = DEC_FORMAT.format(item.getPrice()*(currQuantity+1));
+				this._itemsTablePanel._table.getModel().setValueAt(formattedAmt, row, 3);
 				// fire update event
 				for (final IViewListener listener : this._listeners)
 				{
@@ -292,7 +296,8 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		}
 		// item does not yet exist, just add it
 		DefaultTableModel tableModel = (DefaultTableModel)this._itemsTablePanel._table.getModel();
-		tableModel.addRow(new Object[] {item.getDescription(), item.getPrice(), 1, item.getPrice()});
+		String formattedAmt = DEC_FORMAT.format(item.getPrice());
+		tableModel.addRow(new Object[] {item.getDescription(), formattedAmt, 1, item.getPrice()});
 		
 		// fire update event
 		for (final IViewListener listener : this._listeners)
@@ -309,8 +314,8 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		{
 			InvoiceItem currentItem = new InvoiceItem(
 					(String)this._itemsTablePanel._table.getModel().getValueAt(row, 0),
-					(double)this._itemsTablePanel._table.getModel().getValueAt(row, 1)
-					);
+					roundAmount(Double.parseDouble((String)this._itemsTablePanel._table.getModel().getValueAt(row, 1))
+					));
 			// TODO: figure out why equals() does not work
 			if (currentItem.getDescription().equals(item.getDescription()) && 
 					currentItem.getPrice() == item.getPrice())
@@ -362,7 +367,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 			double price;
 			try
 			{
-				price = Double.parseDouble(priceField.getText());
+				price = roundAmount(Double.parseDouble(priceField.getText()));
 			}
 			catch (Exception e)
 			{
@@ -414,7 +419,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		try
 		{
-			return Double.parseDouble(this._southPanel._totalsPanel._subtotalField.getText());
+			return roundAmount(Double.parseDouble(this._southPanel._totalsPanel._subtotalField.getText()));
 		}
 		catch (Exception e)
 		{
@@ -429,8 +434,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		// update the UI on the EDT
 		Runnable doUpdate = () -> {
-			DecimalFormat decFormat = new DecimalFormat("#.00");
-			String formattedSubtotal = decFormat.format(subtotal);
+			String formattedSubtotal = DEC_FORMAT.format(subtotal);
 			this._southPanel._totalsPanel._subtotalField.setText(formattedSubtotal);
 		};
 		SwingUtilities.invokeLater(doUpdate);
@@ -493,7 +497,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		try
 		{
-			return Double.parseDouble(this._southPanel._totalsPanel._totalField.getText());
+			return roundAmount(Double.parseDouble(this._southPanel._totalsPanel._totalField.getText()));
 		}
 		catch (Exception e)
 		{
@@ -507,8 +511,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	{
 		// update the UI on the EDT
 		Runnable doUpdate = () -> {
-			DecimalFormat decFormat = new DecimalFormat("#.00");
-			String formattedTotal = decFormat.format(total);
+			String formattedTotal = DEC_FORMAT.format(total);
 			this._southPanel._totalsPanel._totalField.setText(formattedTotal);
 		};
 		SwingUtilities.invokeLater(doUpdate);

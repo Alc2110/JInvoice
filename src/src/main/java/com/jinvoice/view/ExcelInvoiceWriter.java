@@ -244,6 +244,16 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 			ws.autoSizeColumn(col);
 		}
 		
+		// add notes
+		currRow = currRow + 2;
+		row = ws.createRow(currRow);
+		cell = row.createCell(0);
+		cell.setCellValue("Notes: ");
+		cell.setCellStyle(headerAndMetaStyle);
+		cell = row.createCell(1);
+		cell.setCellValue(this._invoice.getNotes());
+		cell.setCellStyle(headerAndMetaStyle);
+		
 		// save to disk
 		FileOutputStream os = new FileOutputStream(this._filePath);
 		wb.write(os);

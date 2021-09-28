@@ -239,6 +239,11 @@ public class ExcelInvoiceWriter extends InvoiceWriter
 		cell.setCellValue(this._invoice.getTotal());
 		cell.setCellStyle(headerAndMetaStyleWithCurrency);
 		
+		// autofit columns
+		for (int col = 0; col <= 3; col++) {
+			ws.autoSizeColumn(col);
+		}
+		
 		// save to disk
 		FileOutputStream os = new FileOutputStream(this._filePath);
 		wb.write(os);

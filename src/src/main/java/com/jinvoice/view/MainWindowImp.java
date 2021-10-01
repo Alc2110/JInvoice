@@ -47,7 +47,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	public MainWindowImp(String title, String version, int windowWidth, int windowHeight, String[] attributions)
 	{
 		// set window properties
-		this.setTitle(title);
+		this.setTitle(title + " v" + version);
 		this.setSize(windowWidth, windowHeight);
 		
 		// create menubar

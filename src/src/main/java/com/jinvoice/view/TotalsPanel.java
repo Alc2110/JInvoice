@@ -33,8 +33,8 @@ class TotalsPanel extends JPanel
 		this.setLayout(new GridBagLayout());
 		
 		Font totalFont = new Font("SansSerif", Font.BOLD, 14);
-		SpinnerNumberModel taxPercentSpinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
-		SpinnerNumberModel discountPercentSpinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
+		SpinnerNumberModel taxPercentSpinnerModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
+		SpinnerNumberModel discountPercentSpinnerModel = new SpinnerNumberModel(0.0, 0.0, null, 0.1);
 
 		addComponent(this._subtotalLbl,
 				0, 0,

@@ -21,8 +21,8 @@ public class Invoice
 	private String _notes;
 	private double _shipping;
 	private ArrayList<InvoiceItem> _items = new ArrayList<InvoiceItem>();
-	private int _taxPercentage;
-	private int _discountPercentage;
+	private double _taxPercentage;
+	private double _discountPercentage;
 	
 	/*
 	 * Default constructor.
@@ -31,27 +31,27 @@ public class Invoice
 	{
 		
 	}
-	
-	public int getTaxPercentage()
+
+	public double getTaxPercentage()
 	{
 		return this._taxPercentage;
 	}
-	
-	public void setTaxPercentage(int percentage)
+
+	public void setTaxPercentage(double percentage)
 	{
 		this._taxPercentage = percentage;
 	}
-	
-	public void setDiscountPercentage(int percentage)
+
+	public void setDiscountPercentage(double percentage)
 	{
 		this._discountPercentage = percentage;
 	}
-	
-	public int getDiscountPercentage()
+
+	public double getDiscountPercentage()
 	{
 		return this._discountPercentage;
 	}
-
+	
 	public double getSubtotal()
 	{
 		double total = 0;
@@ -235,7 +235,7 @@ public class Invoice
 	/*
 	 * Calculates the value of a percentage of a given value.
 	 */
-	private double getPercent(double value, int percent)
+	private double getPercent(double value, double percent)
 	{
 		return roundAmount((percent/(double)100)*value);
 	}//getPercent

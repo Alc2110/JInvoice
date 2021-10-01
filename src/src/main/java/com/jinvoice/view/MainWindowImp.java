@@ -8,6 +8,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.awt.*;
 import java.io.File;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.DecimalFormat;
@@ -184,7 +185,7 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	@Override
 	public int getNumber()
 	{
-		return commitSpinnerValue(this._northPanel._detailsPanel._numberField);
+		return commitSpinnerValueInt(this._northPanel._detailsPanel._numberField);
 	}
 
 	@Override
@@ -439,24 +440,24 @@ public class MainWindowImp extends JFrame implements IMainWindow
 	}
 
 	@Override
-	public int getTaxPercent()
+	public double getTaxPercent()
 	{
-		return commitSpinnerValue(this._southPanel._totalsPanel._taxField);
+		return commitSpinnerValuePercent(this._southPanel._totalsPanel._taxField);
 	}
-
+	
 	@Override
-	public void setTaxPercent(int percent)
+	public void setTaxPercent(double percent)
 	{
 		this._southPanel._totalsPanel._taxField.setValue(percent);
 	}
 
 	@Override
-	public int getDiscountPercent()
+	public double getDiscountPercent()
 	{
-		return commitSpinnerValue(this._southPanel._totalsPanel._discountField);
+		return commitSpinnerValuePercent(this._southPanel._totalsPanel._discountField);
 	}
 	
-	private int commitSpinnerValue(JSpinner spinner)
+	private int commitSpinnerValueInt(JSpinner spinner)
 	{
 		// commit the value
 		// ensures manually-typed values are reflected in the model
@@ -471,9 +472,33 @@ public class MainWindowImp extends JFrame implements IMainWindow
 		
 		return (Integer)spinner.getValue();
 	}
+	
+	private double commitSpinnerValuePercent(JSpinner spinner)
+	{
+		// commit the value
+		// ensures manually-typed values are reflected in the model
+		try
+		{
+			spinner.commitEdit();
+		}
+		catch (java.text.ParseException e)
+		{
+			return 0;
+		}
+		
+		return roundPercent((double)spinner.getValue());
+	}
+	
+	private double roundPercent(double amt)
+	{
+		java.math.BigDecimal bd = java.math.BigDecimal.valueOf(amt);
+		bd = bd.setScale(1, RoundingMode.HALF_UP);
+		
+		return bd.doubleValue();
+	}
 
 	@Override
-	public void setDiscountPercent(int percent)
+	public void setDiscountPercent(double percent)
 	{
 		this._southPanel._totalsPanel._discountField.setValue(percent);
 	}

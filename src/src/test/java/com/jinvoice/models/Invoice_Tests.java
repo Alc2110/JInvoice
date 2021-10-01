@@ -106,7 +106,7 @@ class Invoice_Tests {
 		assertTrue(freqMap.get(item1)==1);
 		assertTrue(freqMap.get(item2)==2);
 	}
-	
+
 	/*
 	@Test
 	void testGetFrom() {

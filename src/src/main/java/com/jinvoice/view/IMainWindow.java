@@ -53,11 +53,11 @@ public interface IMainWindow
 	public double getSubtotal();
 	public void setSubtotal(double subtotal);
 	
-	public int getTaxPercent();
-	public void setTaxPercent(int percent);
+	public double getTaxPercent();
+	public void setTaxPercent(double percent);
 	
-	public int getDiscountPercent();
-	public void setDiscountPercent(int percent);
+	public double getDiscountPercent();
+	public void setDiscountPercent(double percent);
 	
 	public String getEnteredShipping();
 	public void setShipping(double shipping);
